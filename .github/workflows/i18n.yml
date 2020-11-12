@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
 
   verify-i18n-files:
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
