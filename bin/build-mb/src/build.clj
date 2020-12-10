@@ -28,12 +28,12 @@
                      :ee "ee"
                      :ce "oss")]
     (u/step (format "Build frontend with MB_EDITION=%s" mb-edition)
-      (u/step "Run 'yarn' to download javascript dependencies"
+      (u/step "Run 'npm' to download javascript dependencies"
         (if (env/env :ci)
           (do
             (u/announce "CI run: enforce the lockfile")
-            (u/sh {:dir u/project-root-directory} "yarn" "--frozen-lockfile"))
-          (u/sh {:dir u/project-root-directory} "yarn")))
+            (u/sh {:dir u/project-root-directory} "npm" "ci"))
+          (u/sh {:dir u/project-root-directory} "npm" "install")))
       (u/step "Run 'webpack' with NODE_ENV=production to assemble and minify frontend assets"
         (u/sh {:dir u/project-root-directory
                :env {"PATH"       (env/env :path)
