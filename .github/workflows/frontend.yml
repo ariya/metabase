@@ -31,10 +31,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run lint-flow
       name: Run Flow type checker
 
@@ -49,10 +53,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run lint-prettier
       name: Run Prettier formatting linter
 
@@ -67,10 +75,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run lint-eslint
       name: Run ESLint linter
 
@@ -85,10 +97,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run lint-docs-links
       name: Run docs links checker
 
@@ -103,10 +119,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run test-unit
       name: Run frontend unit tests
 
@@ -121,10 +141,14 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run test-integration
       name: Run frontend integration tests
 
@@ -139,9 +163,13 @@ jobs:
         node-version: 14.x
     - name: Get yarn cache
       uses: actions/cache@v2
+      id: get-yarn-cache
       with:
-        path: ~/.cache/yarn
+        path: |
+          ~/.cache/yarn
+          ./node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
+      if: steps.get-yarn-cache.outputs.cache-hit != 'true'
     - run: yarn run test-timezones
       name: Run frontend timezones tests
