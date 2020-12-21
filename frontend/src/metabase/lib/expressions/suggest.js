@@ -540,7 +540,7 @@ const ALL_RULES = [
   "comparisonExpression",
   "booleanUnaryExpression",
   "logicalAndExpression",
-  "logicalOrExpression"
+  "logicalOrExpression",
 ];
 
 const TYPE_RULES = new Set([

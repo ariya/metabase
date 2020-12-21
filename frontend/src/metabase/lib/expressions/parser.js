@@ -22,7 +22,7 @@ import {
   FunctionName,
   lexerWithRecovery,
   isTokenType,
-  RecoveryToken
+  RecoveryToken,
 } from "./lexer";
 
 import { isExpressionType, getFunctionArgType } from ".";
@@ -124,8 +124,11 @@ export class ExpressionParser extends CstParser {
     });
 
     // a filter expression
-    $.RULE("boolean", () => {
-      $.SUBRULE($.booleanExpression, { LABEL: "expression" });
+    $.RULE("boolean", returnType => {
+      $.SUBRULE($.booleanExpression, {
+        ARGS: [returnType],
+        LABEL: "expression",
+      });
     });
 
     // EXPRESSIONS:
@@ -133,8 +136,11 @@ export class ExpressionParser extends CstParser {
     // Lowest precedence thus it is first in the rule chain
     // The precedence of binary expressions is determined by
     // how far down the Parse Tree the binary expression appears.
-    $.RULE("booleanExpression", () => {
-      $.SUBRULE($.logicalOrExpression, { LABEL: "expression" });
+    $.RULE("booleanExpression", returnType => {
+      $.SUBRULE($.logicalOrExpression, {
+        ARGS: [returnType],
+        LABEL: "expression",
+      });
     });
     $.RULE("logicalOrExpression", returnType => {
       $.SUBRULE($.logicalAndExpression, {
@@ -163,8 +169,10 @@ export class ExpressionParser extends CstParser {
       });
     });
     $.RULE("booleanUnaryExpression", () => {
-      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators" });
-      $.SUBRULE($.additionExpression, { LABEL: "operands", ARGS: ["boolean"] });
+      $.SUBRULE($.additionExpression, {
+        ARGS: ["boolean"],
+        LABEL: "operands",
+      });
     });
     $.RULE("additionExpression", returnType => {
       $.SUBRULE($.multiplicationExpression, {
@@ -357,13 +365,6 @@ export class ExpressionParser extends CstParser {
               }),
           },
           // filters
-          {
-            GATE: () => isExpressionType("boolean", returnType),
-            ALT: () =>
-              $.SUBRULE($.booleanExpression, {
-                LABEL: "expression",
-              }),
-          },
           {
             GATE: () => isExpressionType("boolean", returnType),
             ALT: () =>

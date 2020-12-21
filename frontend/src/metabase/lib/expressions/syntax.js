@@ -196,7 +196,7 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
 
   // FILTERS
   booleanExpression(ctx) {
-    return this._arithmeticExpression(ctx.operands, ctx.operators);
+    return this.visit(ctx.expression);
   }
   comparisonExpression(ctx) {
     return syntaxNode(
@@ -207,11 +207,7 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
     );
   }
   booleanUnaryExpression(ctx) {
-    return syntaxNode(
-      "filter",
-      tokenNode(ctx.operators),
-      this.visit(ctx.operands),
-    );
+    return this.visit(ctx.operands[0]);
   }
 }
 
