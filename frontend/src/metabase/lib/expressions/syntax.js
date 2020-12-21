@@ -73,6 +73,7 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
   }
 
   relationalExpression(ctx) {
+    // console.log('==== RELATIONAL', ctx )
     return this._logicalExpression(ctx.operands, ctx.operators);
   }
   logicalOrExpression(ctx) {
@@ -80,6 +81,15 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
   }
   logicalAndExpression(ctx) {
     return this._logicalExpression(ctx.operands, ctx.operators);
+  }
+  logicalNotExpression(ctx) {
+    const node = syntaxNode(
+      "filter",
+      tokenNode(ctx.operators),
+      this.visit(ctx.operands),
+    );
+    // console.log('-------- NOT', JSON.stringify(node, null, 2));
+    return node;
   }
 
   _logicalExpression(operands = [], operators = []) {
@@ -207,7 +217,8 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
     );
   }
   booleanUnaryExpression(ctx) {
-    return this.visit(ctx.operands[0]);
+    //console.log('-------- UNARY', ctx);
+    return this.visit(ctx.expression);
   }
 }
 

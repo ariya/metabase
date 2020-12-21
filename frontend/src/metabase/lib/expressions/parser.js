@@ -88,20 +88,6 @@ export class ExpressionParser extends CstParser {
       });
     });
 
-    $.RULE("relationalExpression", returnType => {
-      $.SUBRULE($.additionExpression, {
-        ARGS: [returnType],
-        LABEL: "operands",
-      });
-      $.MANY(() => {
-        $.CONSUME(FilterOperator, { LABEL: "operators" });
-        $.SUBRULE2($.additionExpression, {
-          ARGS: [returnType],
-          LABEL: "operands",
-        });
-      });
-    });
-
     $.RULE("number", () => {
       $.SUBRULE($.additionExpression, {
         LABEL: "expression",
@@ -156,19 +142,51 @@ export class ExpressionParser extends CstParser {
       });
     });
     $.RULE("logicalAndExpression", () => {
-      $.SUBRULE($.booleanUnaryExpression, {
+      $.SUBRULE($.relationalExpression, {
         ARGS: ["boolean"],
         LABEL: "operands",
       });
       $.MANY(() => {
         $.CONSUME(LogicalAndOperator, { LABEL: "operators" });
-        $.SUBRULE2($.booleanUnaryExpression, {
+        $.SUBRULE2($.relationalExpression, {
           ARGS: ["boolean"],
           LABEL: "operands",
         });
       });
     });
-    $.RULE("booleanUnaryExpression", () => {
+    $.RULE("relationalExpression", returnType => {
+      $.SUBRULE($.booleanUnaryExpression, {
+        ARGS: [returnType],
+        LABEL: "operands",
+      });
+      $.MANY(() => {
+        $.CONSUME(FilterOperator, { LABEL: "operators" });
+        $.SUBRULE2($.booleanUnaryExpression, {
+          ARGS: [returnType],
+          LABEL: "operands",
+        });
+      });
+    });
+    $.RULE("booleanUnaryExpression", returnType => {
+      $.OR([
+        {
+          ALT: () =>
+            $.SUBRULE($.logicalNotExpression, {
+              ARGS: ["boolean"],
+              LABEL: "expression",
+            }),
+        },
+        {
+          ALT: () =>
+            $.SUBRULE($.additionExpression, {
+              ARGS: [returnType],
+              LABEL: "expression",
+            }),
+        },
+      ]);
+    });
+    $.RULE("logicalNotExpression", () => {
+      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators " });
       $.SUBRULE($.additionExpression, {
         ARGS: ["boolean"],
         LABEL: "operands",
@@ -187,7 +205,6 @@ export class ExpressionParser extends CstParser {
         });
       });
     });
-
     $.RULE("multiplicationExpression", returnType => {
       $.SUBRULE($.atomicExpression, {
         ARGS: [returnType],
@@ -424,7 +441,7 @@ export class ExpressionParser extends CstParser {
 
     $.RULE("parenthesisExpression", returnType => {
       $.CONSUME(LParen);
-      $.SUBRULE($.any, { LABEL: "expression", ARGS: [returnType] });
+      $.SUBRULE($.expression, { LABEL: "expression", ARGS: [returnType] });
       $.CONSUME(RParen);
     });
 

@@ -24,6 +24,13 @@ const partialInputCases = {
 };
 
 describe("metabase/lib/expressions/syntax", () => {
+  it("should BLA", () => {
+    const tree = defaultParser({
+      source: "NOT ([A] > 0)",
+      startRule: "logicalNotExpression",
+    });
+    expect(serialize(tree)).toEqual("NOT ([A] > 0)");
+  });
   for (const parser of [defaultParser, recoveryParser, fallbackParser]) {
     describe(`${parser.name}()`, () => {
       for (const [name, cases, opts] of shared) {
