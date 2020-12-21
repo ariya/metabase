@@ -9,8 +9,9 @@ import {
   MultiplicativeOperator,
   Case,
   FilterOperator,
-  BooleanOperatorBinary,
   BooleanOperatorUnary,
+  LogicalAndOperator,
+  LogicalOrOperator,
   StringLiteral,
   NumberLiteral,
   Minus,
@@ -21,7 +22,7 @@ import {
   FunctionName,
   lexerWithRecovery,
   isTokenType,
-  RecoveryToken,
+  RecoveryToken
 } from "./lexer";
 
 import { isExpressionType, getFunctionArgType } from ".";
@@ -81,11 +82,26 @@ export class ExpressionParser extends CstParser {
 
     // an expression without aggregations in it
     $.RULE("expression", () => {
-      $.SUBRULE($.additionExpression, {
+      $.SUBRULE($.relationalExpression, {
         LABEL: "expression",
         ARGS: ["expression"],
       });
     });
+
+    $.RULE("relationalExpression", returnType => {
+      $.SUBRULE($.additionExpression, {
+        ARGS: [returnType],
+        LABEL: "operands",
+      });
+      $.MANY(() => {
+        $.CONSUME(FilterOperator, { LABEL: "operators" });
+        $.SUBRULE2($.additionExpression, {
+          ARGS: [returnType],
+          LABEL: "operands",
+        });
+      });
+    });
+
     $.RULE("number", () => {
       $.SUBRULE($.additionExpression, {
         LABEL: "expression",
@@ -117,6 +133,39 @@ export class ExpressionParser extends CstParser {
     // Lowest precedence thus it is first in the rule chain
     // The precedence of binary expressions is determined by
     // how far down the Parse Tree the binary expression appears.
+    $.RULE("booleanExpression", () => {
+      $.SUBRULE($.logicalOrExpression, { LABEL: "expression" });
+    });
+    $.RULE("logicalOrExpression", returnType => {
+      $.SUBRULE($.logicalAndExpression, {
+        ARGS: ["boolean"],
+        LABEL: "operands",
+      });
+      $.MANY(() => {
+        $.CONSUME(LogicalOrOperator, { LABEL: "operators" });
+        $.SUBRULE2($.logicalAndExpression, {
+          ARGS: ["boolean"],
+          LABEL: "operands",
+        });
+      });
+    });
+    $.RULE("logicalAndExpression", () => {
+      $.SUBRULE($.booleanUnaryExpression, {
+        ARGS: ["boolean"],
+        LABEL: "operands",
+      });
+      $.MANY(() => {
+        $.CONSUME(LogicalAndOperator, { LABEL: "operators" });
+        $.SUBRULE2($.booleanUnaryExpression, {
+          ARGS: ["boolean"],
+          LABEL: "operands",
+        });
+      });
+    });
+    $.RULE("booleanUnaryExpression", () => {
+      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators" });
+      $.SUBRULE($.additionExpression, { LABEL: "operands", ARGS: ["boolean"] });
+    });
     $.RULE("additionExpression", returnType => {
       $.SUBRULE($.multiplicationExpression, {
         ARGS: [returnType],
@@ -145,6 +194,7 @@ export class ExpressionParser extends CstParser {
       });
     });
 
+    /*
     $.RULE("booleanExpression", () => {
       $.SUBRULE($.atomicExpression, {
         ARGS: ["boolean"],
@@ -158,11 +208,7 @@ export class ExpressionParser extends CstParser {
         });
       });
     });
-
-    $.RULE("booleanUnaryExpression", () => {
-      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators" });
-      $.SUBRULE($.atomicExpression, { LABEL: "operands", ARGS: ["boolean"] });
-    });
+    */
 
     $.RULE("comparisonExpression", () => {
       $.SUBRULE($.dimensionExpression, { LABEL: "operands" });
@@ -184,13 +230,13 @@ export class ExpressionParser extends CstParser {
             $.CONSUME(LParen);
             let i = 0;
             $.OPTION(() => {
-              $.SUBRULE($.any, {
+              $.SUBRULE($.expression, {
                 LABEL: "arguments",
                 ARGS: [getFunctionArgType(fn, i++)],
               });
               $.MANY(() => {
                 $.CONSUME(Comma);
-                $.SUBRULE1($.any, {
+                $.SUBRULE1($.expression, {
                   LABEL: "arguments",
                   ARGS: [getFunctionArgType(fn, i++)],
                 });
@@ -314,14 +360,7 @@ export class ExpressionParser extends CstParser {
           {
             GATE: () => isExpressionType("boolean", returnType),
             ALT: () =>
-              $.SUBRULE($.comparisonExpression, {
-                LABEL: "expression",
-              }),
-          },
-          {
-            GATE: () => isExpressionType("boolean", returnType),
-            ALT: () =>
-              $.SUBRULE($.booleanUnaryExpression, {
+              $.SUBRULE($.booleanExpression, {
                 LABEL: "expression",
               }),
           },
