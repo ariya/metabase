@@ -441,7 +441,7 @@ export class ExpressionParser extends CstParser {
 
     $.RULE("parenthesisExpression", returnType => {
       $.CONSUME(LParen);
-      $.SUBRULE($.expression, { LABEL: "expression", ARGS: [returnType] });
+      $.SUBRULE($.any, { LABEL: "expression", ARGS: [returnType] });
       $.CONSUME(RParen);
     });
 
