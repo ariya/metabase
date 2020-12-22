@@ -186,7 +186,7 @@ export class ExpressionParser extends CstParser {
       ]);
     });
     $.RULE("logicalNotExpression", () => {
-      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators " });
+      $.CONSUME(BooleanOperatorUnary, { LABEL: "operators" });
       $.SUBRULE($.additionExpression, {
         ARGS: ["boolean"],
         LABEL: "operands",
