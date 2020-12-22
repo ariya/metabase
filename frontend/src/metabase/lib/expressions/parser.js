@@ -162,7 +162,7 @@ export class ExpressionParser extends CstParser {
       $.MANY(() => {
         $.CONSUME(FilterOperator, { LABEL: "operators" });
         $.SUBRULE2($.booleanUnaryExpression, {
-          ARGS: [returnType],
+          ARGS: ["expression"],
           LABEL: "operands",
         });
       });
