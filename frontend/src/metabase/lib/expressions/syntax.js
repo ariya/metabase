@@ -208,16 +208,7 @@ export class ExpressionSyntaxVisitor extends ExpressionCstVisitor {
   booleanExpression(ctx) {
     return this.visit(ctx.expression);
   }
-  comparisonExpression(ctx) {
-    return syntaxNode(
-      "filter",
-      this.visit(ctx.operands[0]),
-      tokenNode(ctx.operators),
-      this.visit(ctx.operands[1]),
-    );
-  }
   booleanUnaryExpression(ctx) {
-    //console.log('-------- UNARY', ctx);
     return this.visit(ctx.expression);
   }
 }
