@@ -219,28 +219,6 @@ export class ExpressionParser extends CstParser {
       });
     });
 
-    /*
-    $.RULE("booleanExpression", () => {
-      $.SUBRULE($.atomicExpression, {
-        ARGS: ["boolean"],
-        LABEL: "operands",
-      });
-      $.MANY(() => {
-        $.CONSUME(BooleanOperatorBinary, { LABEL: "operators" });
-        $.SUBRULE2($.atomicExpression, {
-          ARGS: ["boolean"],
-          LABEL: "operands",
-        });
-      });
-    });
-    */
-
-    $.RULE("comparisonExpression", () => {
-      $.SUBRULE($.dimensionExpression, { LABEL: "operands" });
-      $.CONSUME(FilterOperator, { LABEL: "operators" });
-      $.SUBRULE($.expression, { LABEL: "operands" });
-    });
-
     $.RULE("functionExpression", returnType => {
       $.CONSUME(FunctionName, { LABEL: "functionName" });
       $.OR1([
