@@ -36,6 +36,18 @@ class ExpressionMBQLCompilerVisitor extends ExpressionCstVisitor {
     return this.visit(ctx.expression);
   }
 
+  relationalExpression(ctx) {
+    return this._collapseOperators(ctx.operands, ctx.operators);
+  }
+  logicalOrExpression(ctx) {
+    return this._collapseOperators(ctx.operands, ctx.operators);
+  }
+  logicalAndExpression(ctx) {
+    return this._collapseOperators(ctx.operands, ctx.operators);
+  }
+  logicalNotExpression(ctx) {
+    return [ctx.operators[0].image.toLowerCase(), this.visit(ctx.operands[0])];
+  }
   additionExpression(ctx) {
     return this._collapseOperators(ctx.operands, ctx.operators);
   }
@@ -79,6 +91,7 @@ class ExpressionMBQLCompilerVisitor extends ExpressionCstVisitor {
   segmentExpression(ctx) {
     const segmentName = this.visit(ctx.segmentName);
     const segment = parseSegment(segmentName, this._options);
+    console.log('SEGMENTEXPRESSION', { segmentName, segment })
     if (!segment) {
       throw new Error(`Unknown Segment: ${segmentName}`);
     }
@@ -114,7 +127,7 @@ class ExpressionMBQLCompilerVisitor extends ExpressionCstVisitor {
 
   // FILTERS
   booleanExpression(ctx) {
-    return this._collapseOperators(ctx.operands, ctx.operators);
+    return this.visit(ctx.expression);
   }
 
   comparisonExpression(ctx) {
@@ -125,7 +138,7 @@ class ExpressionMBQLCompilerVisitor extends ExpressionCstVisitor {
     ];
   }
   booleanUnaryExpression(ctx) {
-    return [ctx.operators[0].image.toLowerCase(), this.visit(ctx.operands[0])];
+    return this.visit(ctx.expression);
   }
 
   // HELPERS:
