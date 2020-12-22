@@ -233,13 +233,13 @@ export class ExpressionParser extends CstParser {
             $.CONSUME(LParen);
             let i = 0;
             $.OPTION(() => {
-              $.SUBRULE($.expression, {
+              $.SUBRULE($.any, {
                 LABEL: "arguments",
                 ARGS: [getFunctionArgType(fn, i++)],
               });
               $.MANY(() => {
                 $.CONSUME(Comma);
-                $.SUBRULE1($.expression, {
+                $.SUBRULE1($.any, {
                   LABEL: "arguments",
                   ARGS: [getFunctionArgType(fn, i++)],
                 });
