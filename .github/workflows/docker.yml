@@ -2,15 +2,9 @@ name: Docker
 
 on:
   push:
-    branches:
-      - master
-      - 'release-**'
-    tags:
-      - '**'
-    paths-ignore:
-    - 'docs/**'
-    - 'frontend/test/**'
-    - 'enterprise/frontend/test/**'
+  pull_request:
+    paths:
+    - '**/Dockerfile'
 
 jobs:
 
@@ -20,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build container image
-      run: docker build .
+      run: docker build -t test-container-image .
