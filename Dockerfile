@@ -9,7 +9,7 @@ WORKDIR /app/source
 ENV FC_LANG en-US LC_CTYPE en_US.UTF-8
 
 # frontend dependencies
-COPY yarn.lock package.json .yarnrc ./
+COPY yarn.lock package.json ./
 RUN yarn install --frozen-lockfile
 
 ###################
