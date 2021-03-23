@@ -12,6 +12,7 @@ function DataStep({ color, query, databases, updateQuery }) {
   return (
     <NotebookCell color={color}>
       <DatabaseSchemaAndTableDataSelector
+        query={query}
         databaseQuery={{ saved: true }}
         selectedDatabaseId={query.databaseId()}
         selectedTableId={query.tableId()}
@@ -33,6 +34,7 @@ function DataStep({ color, query, databases, updateQuery }) {
             </NotebookCellItem>
           )
         }
+        isOpen
       />
       {table && query.isRaw() && (
         <DataFieldsPicker
