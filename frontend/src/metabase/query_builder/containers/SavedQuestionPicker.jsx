@@ -20,7 +20,8 @@ const SAVED_QUESTION_DB_ID = -1337;
 })
 class SavedQuestionTableList extends React.Component {
   render() {
-    const { tables = [] } = this.props.schema;
+    const { schema, onChangeTable } = this.props;
+    const { tables = [] } = schema;
     if (tables.length > 0) {
       return (
         <ol className="List text-brand px1 pt2 full">
@@ -29,10 +30,7 @@ class SavedQuestionTableList extends React.Component {
               className="List-section"
               key={t.id}
               onClick={() => {
-                this.props.query
-                  .setTableId(t.id)
-                  .setDefaultQuery()
-                  .update(null, { run: true });
+                onChangeTable(t);
               }}
             >
               <div className="List-item flex mx1">
@@ -178,6 +176,7 @@ class SavedQuestionPicker extends React.Component {
           <SavedQuestionTableList
             schemaName={this.state.currentSchema}
             query={this.props.query}
+            onChangeTable={this.props.onChangeTable}
           />
         </div>
       );

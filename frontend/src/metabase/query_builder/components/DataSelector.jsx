@@ -675,6 +675,7 @@ export class UnconnectedDataSelector extends Component {
       <PopoverWithTrigger triggerElement={this.getTriggerElement()} isOpen>
         <SavedQuestionPicker
           query={query}
+          onChangeTable={this.onChangeTable}
           onBack={() => this.setState({ showSavedQuestions: false })}
         />
       </PopoverWithTrigger>
