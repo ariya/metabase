@@ -34,7 +34,6 @@ function DataStep({ color, query, databases, updateQuery }) {
             </NotebookCellItem>
           )
         }
-        isOpen
       />
       {table && query.isRaw() && (
         <DataFieldsPicker

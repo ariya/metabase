@@ -668,18 +668,20 @@ export class UnconnectedDataSelector extends Component {
     return null;
   }
 
-  render() {
+  renderSavedQuestion() {
     const { query } = this.props;
+    return (
+      <SavedQuestionPicker
+        query={query}
+        onChangeTable={this.onChangeTable}
+        onBack={() => this.setState({ showSavedQuestions: false })}
+      />
+    );
+  }
+
+  render() {
     const { showSavedQuestions } = this.state;
-    return showSavedQuestions ? (
-      <PopoverWithTrigger triggerElement={this.getTriggerElement()} isOpen>
-        <SavedQuestionPicker
-          query={query}
-          onChangeTable={this.onChangeTable}
-          onBack={() => this.setState({ showSavedQuestions: false })}
-        />
-      </PopoverWithTrigger>
-    ) : (
+    return (
       <PopoverWithTrigger
         id="DataPopover"
         ref="popover"
@@ -692,7 +694,9 @@ export class UnconnectedDataSelector extends Component {
         sizeToFit
         isOpen={this.props.isOpen}
       >
-        {this.renderActiveStep()}
+        {showSavedQuestions
+          ? this.renderSavedQuestion()
+          : this.renderActiveStep()}
       </PopoverWithTrigger>
     );
   }
