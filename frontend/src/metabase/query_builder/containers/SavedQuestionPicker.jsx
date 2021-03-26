@@ -19,6 +19,10 @@ const SAVED_QUESTION_DB_ID = -1337;
     generateSchemaId(SAVED_QUESTION_DB_ID, props.schemaName),
 })
 class SavedQuestionTableList extends React.Component {
+  async componentDidMount() {
+    const { schema, onChangeSchema } = this.props;
+    onChangeSchema(schema); // FIXME: is this the right moment?
+  }
   render() {
     const { schema, onChangeTable } = this.props;
     const { tables = [] } = schema;
@@ -176,6 +180,7 @@ class SavedQuestionPicker extends React.Component {
           <SavedQuestionTableList
             schemaName={this.state.currentSchema}
             query={this.props.query}
+            onChangeSchema={this.props.onChangeSchema}
             onChangeTable={this.props.onChangeTable}
           />
         </div>

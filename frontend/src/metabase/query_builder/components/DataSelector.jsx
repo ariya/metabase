@@ -550,11 +550,6 @@ export class UnconnectedDataSelector extends Component {
   };
 
   onChangeDatabase = async database => {
-    if (database.is_saved_questions) {
-      this.setState({ showSavedQuestions: true });
-      await this.previousStep();
-      return;
-    }
     if (this.props.setDatabaseFn) {
       this.props.setDatabaseFn(database && database.id);
     }
@@ -564,6 +559,9 @@ export class UnconnectedDataSelector extends Component {
       await this.previousStep();
     }
     await this.nextStep({ selectedDatabaseId: database && database.id });
+    if (database.is_saved_questions) {
+      this.setState({ showSavedQuestions: true });
+    }
   };
 
   onChangeSchema = async schema => {
@@ -673,6 +671,7 @@ export class UnconnectedDataSelector extends Component {
     return (
       <SavedQuestionPicker
         query={query}
+        onChangeSchema={this.onChangeSchema}
         onChangeTable={this.onChangeTable}
         onBack={() => this.setState({ showSavedQuestions: false })}
       />
