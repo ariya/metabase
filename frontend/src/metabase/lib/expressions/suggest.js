@@ -33,6 +33,8 @@ import {
   lexerWithRecovery,
 } from "./lexer";
 
+import { complete, COMPLETION } from "metabase/lib/expressions/completer";
+
 import getHelpText from "./helper_text_strings";
 
 import { ExpressionDimension } from "metabase-lib/lib/Dimension";
@@ -55,6 +57,46 @@ for (const type of EXPRESSION_TYPES) {
   OPERATORS_BY_TYPE[type] = Array.from(OPERATORS)
     .filter(name => isExpressionType(MBQL_CLAUSES[name].type, type))
     .map(name => MBQL_CLAUSES[name]);
+}
+
+function lexicalSuggestions(startRule, query, source, targetOffset) {
+  const suggestions = [];
+  const completions = complete(startRule, source, targetOffset);
+  completions.forEach(completion => {
+    const prefix = completion.match.toLocaleLowerCase();
+    if (completion.type === COMPLETION.Field) {
+      const dimensions = query.dimensionOptions(() => true).all();
+      suggestions.push(
+        ...dimensions
+          .map(dimension => ({
+            type: "fields",
+            name: getDimensionName(dimension),
+            text: formatDimensionName(dimension) + " ",
+            alternates: EDITOR_FK_SYMBOLS.symbols.map(symbol =>
+              getDimensionName(dimension, symbol),
+            ),
+            prefixTrim: /^(\w|\.)+\s*/,
+            postfixTrim: /(\w|\.)+$/,
+          }))
+          .filter(entry => entry.name.toLowerCase().startsWith(prefix)),
+      );
+    }
+    if (completion.type === COMPLETION.Segment) {
+      suggestions.push(
+        ...query
+          .table()
+          .segments.map(segment => ({
+            type: "segments",
+            name: segment.name,
+            text: formatSegmentName(segment),
+            prefixTrim: /^(\w|\.)+\s*/,
+            postfixTrim: /(\w|\.)+$/,
+          }))
+          .filter(entry => entry.name.toLowerCase().startsWith(prefix)),
+      );
+    }
+  });
+  return suggestions;
 }
 
 export function suggest({
@@ -113,7 +155,12 @@ export function suggest({
   }
   const { expectedType } = context;
 
-  let finalSuggestions = [];
+  let finalSuggestions = lexicalSuggestions(
+    startRule,
+    query,
+    source,
+    targetOffset,
+  );
 
   const syntacticSuggestions = parserWithRecovery.computeContentAssist(
     startRule,
