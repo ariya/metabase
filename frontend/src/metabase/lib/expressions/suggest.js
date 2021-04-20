@@ -43,7 +43,7 @@ import {
   lexerWithRecovery,
 } from "./lexer";
 
-import { tokenize, TOKEN } from "./tokenizer";
+import { complete, COMPLETION } from "metabase/lib/expressions/completer";
 
 import getHelpText from "./helper_text_strings";
 
@@ -69,48 +69,45 @@ for (const type of EXPRESSION_TYPES) {
     .map(name => MBQL_CLAUSES[name]);
 }
 
-function complete(startRule, query, source, targetOffset = source.length) {
-  const partialSource = source.slice(0, targetOffset);
-  const { tokens } = tokenize(partialSource);
-  const lastToken = _.last(tokens);
-  if (
-    startRule !== "aggregation" &&
-    lastToken &&
-    lastToken.type === TOKEN.Identifier &&
-    lastToken.end >= partialSource.length
-  ) {
-    const candidates = [];
-    const dimensions = query.dimensionOptions(() => true).all();
-    candidates.push(
-      ...dimensions.map(dimension => ({
-        type: "fields",
-        name: getDimensionName(dimension),
-        text: formatDimensionName(dimension) + " ",
-        alternates: EDITOR_FK_SYMBOLS.symbols.map(symbol =>
-          getDimensionName(dimension, symbol),
-        ),
-        prefixTrim: /^(\w|\.)+\s*/,
-        postfixTrim: /(\w|\.)+$/,
-      })),
-    );
-    candidates.push(
-      ...query.table().segments.map(segment => ({
-        type: "segments",
-        name: segment.name,
-        text: formatSegmentName(segment),
-        prefixTrim: /^(\w|\.)+\s*/,
-        postfixTrim: /(\w|\.)+$/,
-      })),
-    );
-    const partialIdentifier = partialSource
-      .slice(lastToken.start, lastToken.end)
-      .toLowerCase();
-    return candidates.filter(entry => {
-      return entry.name.toLowerCase().startsWith(partialIdentifier);
-    });
-  }
-
-  return [];
+function lexicalSuggestions(startRule, query, source, targetOffset) {
+  const suggestions = [];
+  const completions = complete(startRule, source, targetOffset);
+  completions.forEach(completion => {
+    const prefix = completion.match.toLocaleLowerCase();
+    if (completion.type === COMPLETION.Field) {
+      const dimensions = query.dimensionOptions(() => true).all();
+      suggestions.push(
+        ...dimensions
+          .map(dimension => ({
+            type: "fields",
+            name: getDimensionName(dimension),
+            text: formatDimensionName(dimension) + " ",
+            alternates: EDITOR_FK_SYMBOLS.symbols.map(symbol =>
+              getDimensionName(dimension, symbol),
+            ),
+            prefixTrim: /^(\w|\.)+\s*/,
+            postfixTrim: /(\w|\.)+$/,
+          }))
+          .filter(entry => entry.name.toLowerCase().startsWith(prefix)),
+      );
+    }
+    if (completion.type === COMPLETION.Segment) {
+      suggestions.push(
+        ...query
+          .table()
+          .segments.map(segment => ({
+            type: "segments",
+            name: segment.name,
+            text: formatSegmentName(segment),
+            prefixTrim: /^(\w|\.)+\s*/,
+            postfixTrim: /(\w|\.)+$/,
+          }))
+          .filter(entry => entry.name.toLowerCase().startsWith(prefix)),
+      );
+    }
+  });
+  console.log("LEXICAL SUGGESTIONS", suggestions.map(s => s.name));
+  return suggestions;
 }
 
 export function suggest({
@@ -169,7 +166,12 @@ export function suggest({
   }
   const { expectedType } = context;
 
-  let finalSuggestions = complete(startRule, query, source, targetOffset);
+  let finalSuggestions = lexicalSuggestions(
+    startRule,
+    query,
+    source,
+    targetOffset,
+  );
 
   const syntacticSuggestions = parserWithRecovery.computeContentAssist(
     startRule,
