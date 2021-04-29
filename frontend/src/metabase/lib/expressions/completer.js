@@ -3,21 +3,11 @@ import _ from "underscore";
 
 export const COMPLETION = {
   Identifier: 1,
-  Operator: 2,
   FilterFunction: 3,
   Case: 4,
   Field: 5,
   Segment: 6,
 };
-
-const FILTER_OPERATORS = [
-  { type: COMPLETION.Operator, match: "!=" },
-  { type: COMPLETION.Operator, match: "<" },
-  { type: COMPLETION.Operator, match: "<=" },
-  { type: COMPLETION.Operator, match: "=" },
-  { type: COMPLETION.Operator, match: ">" },
-  { type: COMPLETION.Operator, match: ">=" },
-];
 
 export function complete(startRule, source, targetOffset) {
   const partialSource = source.slice(0, targetOffset);
@@ -41,21 +31,12 @@ function completeFilter(partialSource) {
         completions.push({ type: COMPLETION.FilterFunction, match });
         completions.push({ type: COMPLETION.Field, match });
         completions.push({ type: COMPLETION.Segment, match });
-      } else {
-        completions = completions.concat(...FILTER_OPERATORS);
-        completions.push({ type: COMPLETION.Operator, match: OP.And });
-        completions.push({ type: COMPLETION.Operator, match: OP.Or });
       }
     }
   } else {
     const match = "";
     completions.push({ type: COMPLETION.FilterFunction, match });
     completions.push({ type: COMPLETION.Case, match });
-    completions.push({ type: COMPLETION.Operator, match: OP.Not });
-    completions.push({
-      type: COMPLETION.Operator,
-      match: OP.OpenParenthesis,
-    });
     completions.push({ type: COMPLETION.Field, match });
     completions.push({ type: COMPLETION.Segment, match });
   }

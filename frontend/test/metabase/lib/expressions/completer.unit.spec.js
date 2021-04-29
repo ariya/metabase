@@ -68,8 +68,6 @@ describe("metabase/lib/expressions/completer", () => {
       expect(filter(" ")).toEqual([
         ...FILTER_FUNCTIONS,
         "case",
-        "not",
-        "(",
         ...FIELDS,
         ...SEGMENTS,
       ]);
@@ -87,19 +85,6 @@ describe("metabase/lib/expressions/completer", () => {
       expect(filter("in")).toEqual(["interval", "Inexpensive"]);
       expect(filter("lux")).toEqual(["Luxury"]);
       expect(filter("prod")).toEqual(["Product ID", "Product → Category"]);
-    });
-
-    it("should suggest comparison operators after a field", () => {
-      expect(filter("[Total] ")).toEqual([
-        "!=",
-        "<",
-        "<=",
-        "=",
-        ">",
-        ">=",
-        "and",
-        "or",
-      ]);
     });
   });
 });
