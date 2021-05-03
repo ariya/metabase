@@ -24,7 +24,7 @@ export const OPERATOR = {
   Not: "not",
   And: "and",
   Or: "or",
-  Xor: "xor",
+  Xor: "xor"
 };
 
 export function tokenize(expression) {
