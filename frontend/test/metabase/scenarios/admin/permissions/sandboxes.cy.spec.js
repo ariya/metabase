@@ -1037,7 +1037,7 @@ describeWithToken("formatting > sandboxes", () => {
       // Add positive assertion once this issue is fixed
     });
 
-    it("sandboxed user should receive sandboxed dashboard subscription", () => {
+    it.skip("sandboxed user should receive sandboxed dashboard subscription", () => {
       cy.request("DELETE", "http://localhost:80/email/all");
       cy.request("PUT", "/api/setting", {
         "email-smtp-host": "localhost",

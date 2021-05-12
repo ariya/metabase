@@ -63,7 +63,7 @@ describe("scenarios > dashboard > subscriptions", () => {
     });
   });
 
-  describe("with email set up", () => {
+  describe.skip("with email set up", () => {
     beforeEach(() => {
       cy.request("DELETE", "http://localhost:80/email/all");
       cy.request("PUT", "/api/setting", {
