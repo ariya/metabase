@@ -1,6 +1,6 @@
 import { restore, setupSMTP } from "__support__/e2e/cypress";
 
-describe("scenarios > admin > settings > email settings", () => {
+describe.skip("scenarios > admin > settings > email settings", () => {
   beforeEach(() => {
     restore();
     cy.signInAsAdmin();
@@ -69,7 +69,7 @@ describe("scenarios > admin > settings > email settings", () => {
     cy.findByLabelText("From Address").should("have.value", "");
   });
 
-  it("should not offer to save email changes when there aren't any (metabase#14749)", () => {
+  it.skip("should not offer to save email changes when there aren't any (metabase#14749)", () => {
     // Make sure some settings are already there
     setupSMTP();
 

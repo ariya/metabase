@@ -64,7 +64,7 @@ describe("scenarios > dashboard > subscriptions", () => {
     });
   });
 
-  describe("with email set up", () => {
+  describe.skip("with email set up", () => {
     beforeEach(() => {
       setupSMTP();
     });

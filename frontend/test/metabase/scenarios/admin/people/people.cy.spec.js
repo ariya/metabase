@@ -178,7 +178,7 @@ describe("scenarios > admin > people", () => {
       clickButton("Done");
     });
 
-    it("should reset user password with SMTP set up", () => {
+    it.skip("should reset user password with SMTP set up", () => {
       const { first_name, last_name } = normal;
       const FULL_NAME = `${first_name} ${last_name}`;
 

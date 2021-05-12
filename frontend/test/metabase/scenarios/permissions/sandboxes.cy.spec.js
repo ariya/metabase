@@ -1033,7 +1033,7 @@ describeWithToken("formatting > sandboxes", () => {
       // Add positive assertion once this issue is fixed
     });
 
-    it("sandboxed user should receive sandboxed dashboard subscription", () => {
+    it.skip("sandboxed user should receive sandboxed dashboard subscription", () => {
       setupSMTP();
 
       cy.sandboxTable({
