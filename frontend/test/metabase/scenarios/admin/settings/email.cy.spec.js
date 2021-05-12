@@ -1,6 +1,6 @@
 import { restore, setupDummySMTP } from "__support__/e2e/cypress";
 
-describe("scenarios > admin > settings > email settings", () => {
+describe.skip("scenarios > admin > settings > email settings", () => {
   beforeEach(() => {
     restore();
     cy.signInAsAdmin();
