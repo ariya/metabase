@@ -54,6 +54,7 @@ const config = (module.exports = {
     "app-public": "./app-public.js",
     "app-embed": "./app-embed.js",
     styles: "./css/index.css",
+    "vizrender": "./vizrender.js",
   },
 
   // output to "dist"
@@ -175,6 +176,14 @@ const config = (module.exports = {
       inject: "head",
       alwaysWriteToDisk: true,
     }),
+    new HtmlWebpackPlugin({
+      filename: "../../index.html",
+      chunksSortMode: "manual",
+      chunks: ["vendor", "styles", "vizrender"],
+      template: __dirname + "/resources/frontend_client/index_template.html",
+      inject: "head",
+      alwaysWriteToDisk: true,
+    }),
     new HtmlWebpackHarddiskPlugin({
       outputPath: __dirname + "/resources/frontend_client/app/dist",
     }),
@@ -195,6 +204,10 @@ const config = (module.exports = {
         "app-embed": {
           beforeContent:
             "/*\n* This file is subject to the terms and conditions defined in\n * file 'LICENSE-EMBEDDING.txt', which is part of this source code package.\n */\n",
+        },
+        "vizrender": {
+          beforeContent:
+            "/*\n* This file is subject to the terms and conditions defined in\n * file 'LICENSE.txt', which is part of this source code package.\n */\n",
         },
       },
     }),
