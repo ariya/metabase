@@ -21,9 +21,9 @@ var actualRoot = "/";
 window.MetabaseRoot = actualRoot;
 })();
 </script>
-<script src="http://app/dist/vendor.bundle.js"></script>
-<script src="http://app/dist/styles.bundle.js"></script>
-<script src="http://app/dist/vizrender.bundle.js"></script>
+<script src="file://resources/frontend_client/app/dist/vendor.bundle.js"></script>
+<script src="file://resources/frontend_client/app/dist/styles.bundle.js"></script>
+<script src="file://resources/frontend_client/app/dist/vizrender.bundle.js"></script>
 </head>
 <body>
 <div id="root"></div>
@@ -31,9 +31,11 @@ window.MetabaseRoot = actualRoot;
 </body>
 </html>`;
 
+const virtualConsole = new jsdom.VirtualConsole();
+virtualConsole.on("error", (message) => console.log('JSDOM Error', message));
 class CustomResourceLoader extends jsdom.ResourceLoader {
   fetch(url, options) {
-    const fname = "resources/frontend_client/" + url.replace("http://", "");
+    const fname = url.replace("file://", "");
     const content = fs.readFileSync(fname);
     console.log(`Loading ${fname} -> ${content.length} bytes`);
     return Promise.resolve(content);
@@ -42,6 +44,7 @@ class CustomResourceLoader extends jsdom.ResourceLoader {
 const resources = new CustomResourceLoader();
 const runScripts = "dangerously";
 const dom = new JSDOM(HTMLContent, {
+  virtualConsole,
   resources,
   runScripts,
   storageQuota: 10000000,
