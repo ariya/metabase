@@ -74,7 +74,7 @@ describe("smoketest > user", () => {
     cy.icon("table2").click();
   });
 
-  it("should filter via the sidebar, header, and notebook editor", () => {
+  it.skip("should filter via the sidebar, header, and notebook editor", () => {
     // Sidebar filter
 
     cy.wait(1000)
@@ -148,7 +148,7 @@ describe("smoketest > user", () => {
     cy.findByText("Vendor is not empty").should("not.exist");
   });
 
-  it("should summarize via both the sidebar and notebook editor", () => {
+  it.skip("should summarize via both the sidebar and notebook editor", () => {
     // Sidebar summary
 
     cy.findAllByText("Summarize")
