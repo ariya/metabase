@@ -147,8 +147,11 @@ jobs:
 
   cypress:
     runs-on: ubuntu-20.04
-    timeout-minutes: 50
+    timeout-minutes: 20
     needs: build
+    strategy:
+      matrix:
+        folder: [admin, collections, dashboard, onboarding, native, question, sharing, visualizations]
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
@@ -181,7 +184,7 @@ jobs:
       name: Retrieve uberjar artifact
       with:
         name: metabase-oss-uberjar
-    - run: yarn run test-cypress-no-build
-      name: Run Cypress tests
+    - run: yarn run test-cypress-no-build --folder frontend/test/metabase/scenarios/${{ matrix.folder }}
+      name: Run Cypress tests on ${{ matrix.folder }}
       env:
         TERM: xterm
