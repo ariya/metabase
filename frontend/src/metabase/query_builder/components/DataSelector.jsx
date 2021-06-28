@@ -310,7 +310,13 @@ export class UnconnectedDataSelector extends Component {
         ...this.state,
         ...newState,
       });
-      this.setState({ ...newState, ...computedState }, resolve);
+      const updatedState = { ...newState, ...computedState };
+      console.log("UnconnectedDataSelector.setState", { updatedState });
+      this.setState(updatedState, resolve);
+      const { selectedTable } = updatedState;
+      if (selectedTable) {
+        this.popover.current.close();
+      }
     });
   }
 
@@ -607,7 +613,6 @@ export class UnconnectedDataSelector extends Component {
     if (this.props.setSourceTableFn) {
       this.props.setSourceTableFn(table && table.id);
     }
-    this.popover.current.close();
     await this.nextStep({ selectedTableId: table && table.id });
   };
 
@@ -735,13 +740,22 @@ export class UnconnectedDataSelector extends Component {
 
   showTableSearch = () => {
     const { hasTableSearch, steps } = this.props;
-    const { activeStep } = this.state;
+    const { activeStep, selectedDatabase } = this.state;
     const hasTableStep = steps.includes(TABLE_STEP);
     const isAllowedToShowOnActiveStep = [SCHEMA_STEP, DATABASE_STEP].includes(
       activeStep,
     );
+    const showingSavedQuestionPicker =
+      activeStep === SCHEMA_STEP &&
+      selectedDatabase &&
+      selectedDatabase.is_saved_questions;
 
-    return hasTableSearch && hasTableStep && isAllowedToShowOnActiveStep;
+    return (
+      hasTableSearch &&
+      hasTableStep &&
+      isAllowedToShowOnActiveStep &&
+      !showingSavedQuestionPicker
+    );
   };
 
   handleSearchTextChange = searchText =>
@@ -769,6 +783,8 @@ export class UnconnectedDataSelector extends Component {
     const searchDatabaseId = canChangeDatabase ? null : selectedDatabaseId;
 
     const isSearchActive = searchText.trim().length >= MIN_SEARCH_LENGTH;
+
+    console.log("UnconnectedDataSelector.render", this.state);
 
     return (
       <PopoverWithTrigger
