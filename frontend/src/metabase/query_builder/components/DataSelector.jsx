@@ -171,7 +171,7 @@ export class UnconnectedDataSelector extends Component {
   static propTypes = {
     selectedDatabaseId: PropTypes.number,
     selectedSchemaId: PropTypes.string,
-    selectedTableId: PropTypes.number,
+    selectedTableId: PropTypes.string,
     selectedFieldId: PropTypes.number,
     databases: PropTypes.array.isRequired,
     setDatabaseFn: PropTypes.func,
@@ -315,7 +315,8 @@ export class UnconnectedDataSelector extends Component {
       this.setState(updatedState, resolve);
       const { selectedTable } = updatedState;
       if (selectedTable) {
-        // setTimeout(() => this.popover.current.close(), 0); console.log('CLOSE POPOVER');
+        setTimeout(() => this.popover.current.close(), 0);
+        console.log("CLOSE POPOVER");
       }
     });
   }
@@ -363,6 +364,7 @@ export class UnconnectedDataSelector extends Component {
     // this logic cleans up invalid states, e.x. if a selectedSchema's database
     // doesn't match selectedDatabase we clear it and go to the SCHEMA_STEP
     const {
+      activeStep,
       selectedDatabase,
       selectedSchema,
       selectedTable,
@@ -384,17 +386,17 @@ export class UnconnectedDataSelector extends Component {
       selectedField &&
       selectedField.table.id !== selectedTable.id;
 
-    console.log(
-      "UnconnectedDataSelector.componentDidUpdate",
-      {
-        invalidSchema,
-        invalidTable,
-        invalidField,
-        outOfSyncTable,
-        selectedTableId,
-      },
-      this.props.selectedTableId,
-    );
+    const mustRewind =
+      selectedDatabase &&
+      selectedDatabase.is_saved_questions &&
+      activeStep === TABLE_STEP;
+    console.log("UnconnectedDataSelector.componentDidUpdate", {
+      selectedDatabase,
+      mustRewind,
+    });
+    if (mustRewind) {
+      await this.switchToStep(SCHEMA_STEP);
+    }
 
     if (outOfSyncTable && this.props.selectedTableId) {
       console.log(
