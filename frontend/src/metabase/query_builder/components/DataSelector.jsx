@@ -315,7 +315,7 @@ export class UnconnectedDataSelector extends Component {
       this.setState(updatedState, resolve);
       const { selectedTable } = updatedState;
       if (selectedTable) {
-        this.popover.current.close();
+        // setTimeout(() => this.popover.current.close(), 0); console.log('CLOSE POPOVER');
       }
     });
   }
@@ -332,12 +332,25 @@ export class UnconnectedDataSelector extends Component {
       "selectedTableId",
       "selectedFieldId",
     ]) {
+      console.log(
+        `  nextProp[${propName}] = ${nextProps[propName]}  ${this.props[propName]} ${this.state[propName]}`,
+      );
       if (
         nextProps[propName] !== this.props[propName] &&
-        this.state[propName] !== nextProps[propName]
+        this.state[propName] !== nextProps[propName] &&
+        !this.state[propName]
       ) {
+        console.log(" ASSSIGNING", propName);
         newState[propName] = nextProps[propName];
       }
+    }
+    console.log(
+      "UnconnectedDataSelector.componentWillReceiveProps",
+      this.state.activeStep,
+      { nextProps, newState },
+    );
+    if (newState.selectedTableId && this.state.activeStep === TABLE_STEP) {
+      console.log("REWIND");
     }
     if (Object.keys(newState).length > 0) {
       this.setStateWithComputedState(newState, nextProps);
@@ -354,7 +367,10 @@ export class UnconnectedDataSelector extends Component {
       selectedSchema,
       selectedTable,
       selectedField,
+      selectedTableId,
     } = this.state;
+
+    const outOfSyncTable = selectedTableId != this.props.selectedTableId;
     const invalidSchema =
       selectedDatabase &&
       selectedSchema &&
@@ -367,6 +383,56 @@ export class UnconnectedDataSelector extends Component {
       selectedTable &&
       selectedField &&
       selectedField.table.id !== selectedTable.id;
+
+    console.log(
+      "UnconnectedDataSelector.componentDidUpdate",
+      {
+        invalidSchema,
+        invalidTable,
+        invalidField,
+        outOfSyncTable,
+        selectedTableId,
+      },
+      this.props.selectedTableId,
+    );
+
+    if (outOfSyncTable && this.props.selectedTableId) {
+      console.log(
+        "MUST sync table",
+        selectedTableId,
+        this.props.selectedTableId,
+      );
+      /*
+      this.hydrateActiveStep();
+
+      const state = {
+        selectedDatabaseId: this.props.selectedDatabaseId,
+        selectedSchemaId: this.props.selectedSchemaId,
+        selectedTableId: this.props.selectedTableId,
+        selectedFieldId: this.props.selectedFieldId,
+      };
+      const computedState = this._getComputedState(props, state);
+      this.setState({
+        activeStep: null,
+        isLoading: false,
+        isError: false,
+        ...state,
+        ...computedState,
+      });
+  
+      await this.switchToStep(SCHEMA_STEP, {
+        selectedSchemaId: null,
+        selectedTableId: null,
+        selectedFieldId: null,
+      });
+      setTimeout(() => {
+        await this.switchToStep(TABLE_STEP, {
+          selectedTableId: this.props.selectedTableId,
+          selectedFieldId: null,
+        });
+      }, 2000);
+      */
+    }
 
     if (invalidSchema) {
       await this.switchToStep(SCHEMA_STEP, {
@@ -688,7 +754,7 @@ export class UnconnectedDataSelector extends Component {
     const { activeStep, selectedDatabase, selectedTable } = this.state;
     const isSavedQuestion =
       selectedDatabase && selectedDatabase.is_saved_questions;
-    console.log("UnconnectedDataSelector.renderActiveStep", {
+    console.log("  UnconnectedDataSelector.renderActiveStep", {
       selectedDatabase,
       selectedTable,
       isSavedQuestion,
@@ -784,7 +850,7 @@ export class UnconnectedDataSelector extends Component {
 
     const isSearchActive = searchText.trim().length >= MIN_SEARCH_LENGTH;
 
-    console.log("UnconnectedDataSelector.render", this.state);
+    console.log("UnconnectedDataSelector.render()", this.state);
 
     return (
       <PopoverWithTrigger
