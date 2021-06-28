@@ -105,6 +105,8 @@ class SavedQuestionPicker extends React.Component {
       return <div>&quot;Loading...&quot;</div>;
     }
 
+    console.log("SavedQuestionPicker.render()", this.state);
+
     // if we're not loading
     if (this.state.collectionSchemas.length > 0) {
       // create a filter for the collection list that checks to see if any of the collections map to a schema with the same name

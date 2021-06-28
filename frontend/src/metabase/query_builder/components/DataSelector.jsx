@@ -284,6 +284,12 @@ export class UnconnectedDataSelector extends Component {
       tables = tables.filter(tableFilter);
     }
 
+    console.log("UnconnectedDataSelector._getComputedState", {
+      selectedDatabase,
+      selectedSchema,
+      selectedTable,
+    });
+
     return {
       databases: databases || [],
       selectedDatabase: selectedDatabase,
@@ -374,6 +380,7 @@ export class UnconnectedDataSelector extends Component {
 
   async hydrateActiveStep() {
     const { steps } = this.props;
+    console.log("UnconnectedDataSelector.hydrateActiveStep", { steps });
     if (this.state.selectedTableId && steps.includes(FIELD_STEP)) {
       await this.switchToStep(FIELD_STEP);
     } else if (this.state.selectedSchemaId && steps.includes(TABLE_STEP)) {
@@ -389,6 +396,7 @@ export class UnconnectedDataSelector extends Component {
   // if `useOnlyAvailable*` prop is provided
   skipSteps() {
     const { activeStep } = this.state;
+    console.log("UnconnectedDataSelector.skipSteps", { activeStep });
     if (
       activeStep === DATABASE_STEP &&
       this.props.useOnlyAvailableDatabase &&
@@ -446,6 +454,10 @@ export class UnconnectedDataSelector extends Component {
 
   nextStep = async (stateChange = {}, skipSteps = true) => {
     const nextStep = this.getNextStep();
+    console.log("async UnconnectedDataSelector.nextStep", {
+      stateChange,
+      skipSteps,
+    });
     if (!nextStep) {
       await this.setStateWithComputedState(stateChange);
       this.popover.current.toggle();
@@ -455,6 +467,7 @@ export class UnconnectedDataSelector extends Component {
   };
 
   previousStep = () => {
+    console.log("async UnconnectedDataSelector.previousStep");
     const previousStep = this.getPreviousStep();
     if (previousStep) {
       const clearedState = this.getClearedStateForStep(previousStep);
@@ -563,6 +576,7 @@ export class UnconnectedDataSelector extends Component {
   };
 
   onChangeDatabase = async database => {
+    console.log("UnconnectedDataSelector.onChangeDatabase", { database });
     if (this.props.setDatabaseFn) {
       this.props.setDatabaseFn(database && database.id);
     }
@@ -578,13 +592,22 @@ export class UnconnectedDataSelector extends Component {
 
   onChangeSchema = async schema => {
     // NOTE: not really any need to have a setSchemaFn since schemas are just a namespace
+    console.log("async UnconnectedDataSelector.onChangeSchema", {
+      schema,
+      id: schema.id,
+    });
     await this.nextStep({ selectedSchemaId: schema && schema.id });
   };
 
   onChangeTable = async table => {
+    console.log("async UnconnectedDataSelector.onChangeTable", {
+      table,
+      id: table.id,
+    });
     if (this.props.setSourceTableFn) {
       this.props.setSourceTableFn(table && table.id);
     }
+    this.popover.current.close();
     await this.nextStep({ selectedTableId: table && table.id });
   };
 
@@ -657,18 +680,31 @@ export class UnconnectedDataSelector extends Component {
       hasFiltering: !hasTableSearch,
     };
 
-    const { activeStep, selectedDatabase } = this.state;
-    if (selectedDatabase && selectedDatabase.is_saved_questions) {
-      if (activeStep === SCHEMA_STEP && combineDatabaseSchemaSteps) {
-        const { query } = this.props;
-        return (
-          <SavedQuestionPicker
-            query={query}
-            onChangeSchema={this.onChangeSchema}
-            onChangeTable={this.onChangeTable}
-            {...props}
-          />
-        );
+    const { activeStep, selectedDatabase, selectedTable } = this.state;
+    const isSavedQuestion =
+      selectedDatabase && selectedDatabase.is_saved_questions;
+    console.log("UnconnectedDataSelector.renderActiveStep", {
+      selectedDatabase,
+      selectedTable,
+      isSavedQuestion,
+      activeStep,
+    });
+    if (isSavedQuestion && 1 < 77) {
+      const { query } = this.props;
+      switch (this.state.activeStep) {
+        case SCHEMA_STEP:
+          return combineDatabaseSchemaSteps ? (
+            <SavedQuestionPicker
+              query={query}
+              onChangeSchema={this.onChangeSchema}
+              onChangeTable={this.onChangeTable}
+              {...props}
+            />
+          ) : (
+            <SchemaPicker {...props} />
+          );
+        case TABLE_STEP:
+          return null; // saved question? we don't choose an individual table
       }
     }
 
@@ -686,6 +722,9 @@ export class UnconnectedDataSelector extends Component {
           <SchemaPicker {...props} />
         );
       case TABLE_STEP:
+        console.log(
+          "UnconnectedDataSelector.renderActiveStep TABLE_STEP TablePicker",
+        );
         return <TablePicker {...props} />;
       case FIELD_STEP:
         return <FieldPicker {...props} />;
@@ -851,6 +890,8 @@ const DatabaseSchemaPicker = ({
     return <DataSelectorLoading />;
   }
 
+  console.log("DatabaseSchemaPicker.render");
+
   const sections = databases.map(database => ({
     name: database.name,
     items:
@@ -900,6 +941,11 @@ const DatabaseSchemaPicker = ({
           // still return "true" to let the AccordionList collapse that section.
           return true;
         }
+        console.log(
+          "DatabaseSchemaPicker.onChangeSection",
+          { sectionIndex },
+          databases[sectionIndex],
+        );
         onChangeDatabase(databases[sectionIndex]);
         return true;
       }}
@@ -928,6 +974,11 @@ const TablePicker = ({
   hasFiltering,
 }) => {
   // In case DataSelector props get reseted
+  console.log("TablePicker.render", {
+    selectedDatabase,
+    selectedSchema,
+    onBack,
+  });
   if (!selectedDatabase) {
     if (onBack) {
       onBack();
@@ -936,6 +987,7 @@ const TablePicker = ({
   }
 
   const isSavedQuestionList = selectedDatabase.is_saved_questions;
+  console.log("TablePicker.render", { isSavedQuestionList });
   const header = (
     <div className="flex flex-wrap align-center">
       <span
