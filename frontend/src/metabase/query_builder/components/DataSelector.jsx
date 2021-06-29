@@ -390,10 +390,14 @@ export class UnconnectedDataSelector extends Component {
       selectedDatabase &&
       selectedDatabase.is_saved_questions &&
       activeStep === TABLE_STEP;
-    console.log("UnconnectedDataSelector.componentDidUpdate", {
-      selectedDatabase,
-      mustRewind,
-    });
+    console.log(
+      "UnconnectedDataSelector.componentDidUpdate",
+      selectedDatabase && selectedDatabase.name,
+      {
+        selectedDatabase,
+        mustRewind,
+      },
+    );
     if (mustRewind) {
       await this.switchToStep(SCHEMA_STEP);
     }
