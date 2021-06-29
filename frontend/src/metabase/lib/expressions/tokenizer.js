@@ -1,5 +1,7 @@
+// @ts-check
 import { t } from "ttag";
 
+/** @enum {number} */
 export const TOKEN = {
   Operator: 1,
   Number: 2,
@@ -7,6 +9,7 @@ export const TOKEN = {
   Identifier: 4,
 };
 
+/** @enum {string} */
 export const OPERATOR = {
   Comma: ",",
   OpenParenthesis: "(",
@@ -26,6 +29,42 @@ export const OPERATOR = {
   Or: "or",
 };
 
+/**
+ * @internal @typedef {Object} RawToken
+ * @property {TOKEN} type
+ * @property {OPERATOR=} op
+ * @property {string=} value
+ * @property {number} start
+ * @property {number} end
+ * @property {string=} error
+ */
+
+/**
+ * @typedef {Object} Token - A representation of a token
+ * @property {TOKEN} type
+ * @property {OPERATOR=} op
+ * @property {string=} value
+ * @property {number} start
+ * @property {number} end
+ */
+
+/**
+ * @typedef {Object} TokenError - An error information of a token
+ * @property {string} message
+ * @property {number} pos
+ */
+
+/**
+ * @typedef {Object} TokenizerResult
+ * @property {Token[]} tokens The list of tokens
+ * @property {TokenError[]} errors The list of errors
+ */
+
+/**
+ * Tokenize an expression into a list of tokens.
+ * @param {string} expression - A custom expression (need not be valid)
+ * @returns {TokenizerResult}
+ */
 export function tokenize(expression) {
   const source = expression;
   const length = expression.length;
@@ -74,6 +113,9 @@ export function tokenize(expression) {
     }
   };
 
+  /**
+   * @returns {RawToken}
+   */
   const scanOperator = () => {
     const start = index;
     const ch = source[start];
@@ -257,6 +299,9 @@ export function tokenize(expression) {
     cp === 0x2e || // dot
     cp === 0x5f; // underscore
 
+  /**
+   * @returns {?RawToken}
+   */
   const scanIdentifier = () => {
     const start = index;
     const initial = source.charCodeAt(start);

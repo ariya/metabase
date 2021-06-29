@@ -1,12 +1,20 @@
+// @ts-check
 import { tokenize, TOKEN, OPERATOR as OP } from "./tokenizer";
 import _ from "underscore";
 
-// Given an expression, get the last identifier as the prefix match.
-// Examples:
-//  "Lower" returns "Lower"
-//  "3 > [Rat" returns "[Rat"
-//  "[Expensive] " returns null (because of the whitespace)
-//  "IsNull([Tax])" returns null (last token is an operator)
+/**
+ * Given an expression, get the last identifier as the prefix match.
+ *
+ * Examples:
+ *
+ * * "Lower" returns "Lower"
+ * * "3 > [Rat" returns "[Rat"
+ * * "[Expensive] " returns null (because of the whitespace)
+ * * "IsNull([Tax])" returns null (last token is an operator)
+ *
+ * @param {string} expression
+ * @returns {?string}
+ */
 
 export function partialMatch(expression) {
   const { tokens } = tokenize(expression);
@@ -20,12 +28,18 @@ export function partialMatch(expression) {
   return null;
 }
 
-// Given an expression, find the inner-most function name.
-// Examples:
-//  "Concat([FirstName]," returns "Concat"
-//  "Concat([Category], Lower([Type]" returns "Lower"
-//  "X() + Concat(Type,Upper(Vendor),Y()" return "Concat"
-//  "[Tax] / 3" returns null (not a function call)
+/**
+ * Given an expression, find the inner-most function name.
+ *
+ * Examples:
+ * * "Concat([FirstName]," returns "Concat"
+ * * "Concat([Category], Lower([Type]" returns "Lower"
+ * * "X() + Concat(Type,Upper(Vendor),Y()" return "Concat"
+ * * "[Tax] / 3" returns null (not a function call)
+ *
+ * @param {string} expression
+ * @returns {?string}
+ */
 
 export function enclosingFunction(expression) {
   const { tokens } = tokenize(expression);

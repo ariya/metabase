@@ -122,27 +122,41 @@ export function typeCheck(cst, rootType) {
   return { typeErrors: checker.errors };
 }
 
-/*
+/**
+ * @typedef {Object} SyntaxNode
+ * @property {string} name
+ * @property {Object} children
+ * @property {SyntaxNode[]=} children.expression
+ * @property {SyntaxNode[]=} children.operators
+ * @property {SyntaxNode[]=} children.operands
+ * @property {SyntaxNode[]=} children.arguments
+ * @property {string=} children.functionName
+ * @property {SyntaxNode[]=} children.LParen
+ * @property {SyntaxNode[]=} children.RParen
+ */
 
-  Create a copy of the syntax tree where the unnecessary intermediate nodes
-  are not present anymore.
+/**
+ Create a copy of the syntax tree where the unnecessary intermediate nodes are not present anymore.
+ 
+ Example: For a simple expression "42", the syntax tree produced by the parser is
 
-  Example:
-  For a simple expression "42", the syntax tree produced by the parser is
-
-  expression <-- this is the root node
+```
+expression <-- this is the root node
     relationalExpression
       additionExpression
         multiplicationExpression
           atomicExpression
             numberLiteral
+```
 
-  Meanwhile, the compact variant of the syntax tree:
+ Meanwhile, the compact variant of the syntax tree:
 
+ ```
     numberLiteral
-
-*/
-
+ ```
+ @param {SyntaxNode} node
+ @returns {SyntaxNode}
+ */
 export function compactSyntaxTree(node) {
   if (!node) {
     return;
