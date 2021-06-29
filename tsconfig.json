@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+        "target": "es5",
+        "skipLibCheck": true
+    },
+    "include": [
+        "./frontend/src/metabase/lib/expressions/**/*"
+    ],
+    "typedocOptions": {
+        "entryPoints": [
+            "./frontend/src/metabase/lib/expressions"
+        ],
+        "out": "doc"
+    }
+}
