@@ -1,63 +1,8 @@
-**This guide will teach you:**
-
-- [How to compile your own copy of Metabase](#build-metabase)
-- [How to set up a development environment](#development-environment)
-- [How to run the Metabase Server](#development-server-quick-start)
-- [How to contribute back to the Metabase project](#contributing)
-- [How to add support in Metabase for other languages](#internationalization)
-
-# Contributing
-
-In general, we like to have an open issue for every pull request as a place to discuss the nature of any bug or proposed improvement. Each pull request should address a single issue, and contain both the fix as well as a description of the pull request and tests that validate that the PR fixes the issue in question.
-
-For significant feature additions, it is expected that discussion will have taken place in the attached issue. Any feature that requires a major decision to be reached will need to have an explicit design document written. The goals of this document are to make explicit the assumptions, constraints and tradeoffs any given feature implementation will contain. The point is not to generate documentation but to allow discussion to reference a specific proposed design and to allow others to consider the implications of a given design.
-
-We don't like getting sued, so before merging any pull request, we'll need each person contributing code to sign a Contributor License Agreement [here](https://docs.google.com/a/metabase.com/forms/d/1oV38o7b9ONFSwuzwmERRMi9SYrhYeOrkbmNaq9pOJ_E/viewform).
-
-# Development on Windows
-
-The development scripts are designed for Linux/Mac environment, so we recommend using the latest Windows 10 version with [WSL (Windows Subsystem for Linux)](https://msdn.microsoft.com/en-us/commandline/wsl/about) and [Ubuntu on Windows](https://www.microsoft.com/store/p/ubuntu/9nblggh4msv6). The Ubuntu Bash shell works well for both backend and frontend development.
-
-If you have problems with your development environment, make sure that you are not using any development commands outside the Bash shell. As an example, Node dependencies installed in normal Windows environment will not work inside Ubuntu Bash environment.
-
-# Install Prerequisites
-
-These are the tools which are required in order to complete any build of the Metabase code. Follow the links to download and install them on your own before continuing.
-
-1. [Clojure (https://clojure.org)](https://clojure.org/guides/getting_started) - install the latest release by following the guide depending on your OS
-2. [Java Development Kit JDK (https://adoptopenjdk.net/releases.html)](https://adoptopenjdk.net/releases.html) - you need to install JDK 11 ([more info on Java versions](./operations-guide/java-versions.md))
-3. [Node.js (http://nodejs.org/)](http://nodejs.org/) - latest LTS release
-4. [Yarn package manager for Node.js](https://yarnpkg.com/) - latest release of version 1.x - you can install it in any OS by doing `npm install --global yarn`
-5. [Leiningen (http://leiningen.org/)](http://leiningen.org/) - latest release
-
-On a most recent stable Ubuntu/Debian, all the tools above, with the exception of Clojure, can be installed by using:
-
-```
-sudo apt install openjdk-11-jdk nodejs leiningen && sudo npm install --global yarn
-```
-If you have multiple JDK versions installed in your machine, be sure to switch your JDK before building by doing `sudo update-alternatives --config java` and selecting Java 11 in the menu
-
-If you are developing on Windows, make sure to use Ubuntu on Windows and follow instructions for Ubuntu/Linux instead of installing ordinary Windows versions.
-
-Alternatively, without the need to explicitly install the above dependencies, follow the guide [on using Visual Studio Code](developers-guide-vscode.md) and its remote container support.
-
-# Build Metabase
-
-The entire Metabase application is compiled and assembled into a single .jar file which can run on any modern JVM. There is a script which will execute all steps in the process and output the final artifact for you. You can pass the environment variable MB_EDITION before running the build script to choose the version that you want to build. If you don't provide a value, the default is `oss` which will build the Community Edition.
-
-    ./bin/build
-
-After running the build script simply look in `target/uberjar` for the output .jar file and you are ready to go.
-
-## Building `Metabase.app`
-
-See [this guide](developers-guide-osx.md).
-
 # Development Environment
 
 If you plan to work on the Metabase code and make changes then you'll need to understand a few more things.
 
-### Overview
+## Overview
 
 The Metabase application has two basic components:
 
@@ -66,7 +11,7 @@ The Metabase application has two basic components:
 
 Both components are built and assembled together into a single jar file which runs the entire application.
 
-### 3rd party dependencies
+## 3rd party dependencies
 
 Metabase depends on lots of other 3rd party libraries to run, so as you are developing you'll need to keep those up to date. Leiningen will automatically fetch Clojure dependencies when needed, but for JavaScript dependencies you'll need to kick off the installation process manually when needed.
 
@@ -75,7 +20,7 @@ Metabase depends on lots of other 3rd party libraries to run, so as you are deve
 $ yarn
 ```
 
-### Development server (quick start)
+## Development server (quick start)
 
 Run your backend development server with
 
@@ -218,36 +163,3 @@ You'll probably want to tell Emacs to store customizations in a different file. 
 (ignore-errors                                                ; load customizations from ~/.emacs.d/.custom.el
   (load-file custom-file))
 ```
-
-## Documentation
-
-## Internationalization
-
-We are an application with lots of users all over the world. To help them use Metabase in their own language, we mark all of our strings as i18n.
-
-### Adding new strings:
-
-If you need to add new strings (try to be judicious about adding copy) do the following:
-
-1. Tag strings in the frontend using `t` and `jt` ES6 template literals (see more details in https://ttag.js.org/):
-
-```javascript
-const someString = t`Hello ${name}!`;
-const someJSX = <div>{jt`Hello ${name}`}</div>;
-```
-
-and in the backend using `trs` (to use the site language) or `tru` (to use the current User's language):
-
-```clojure
-(trs "Hello {0}!" name)
-```
-
-### Translation errors or missing strings
-
-If you see incorrect or missing strings for your language, please visit our [POEditor project](https://poeditor.com/join/project/ynjQmwSsGh) and submit your fixes there.
-
-## License
-
-Copyright © 2021 Metabase, Inc.
-
-Distributed under the terms of the GNU Affero General Public License (AGPL) except as otherwise noted. See individual files for details.
