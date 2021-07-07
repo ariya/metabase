@@ -2,15 +2,6 @@ name: Uberjar
 
 on:
   push:
-    branches:
-      - master
-      - 'release-**'
-    tags:
-      - '**'
-    paths-ignore:
-    - 'docs/**'
-    - 'frontend/test/**'
-    - 'enterprise/frontend/test/**'
 
 jobs:
 
