@@ -98,7 +98,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        folder: [binning, collections, filters, native, question, smoketest, visualizations]
+        folder: [admin]
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
