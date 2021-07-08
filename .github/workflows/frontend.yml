@@ -3,22 +3,6 @@ name: Frontend
 on:
   pull_request:
   push:
-    branches:
-      - master
-      - 'release**'
-      - 'feature**'
-      - 'fix**'
-      - 'ci**'
-    tags:
-      - '**'
-    paths:
-    - 'frontend/**'
-    - 'shared/**'
-    - 'enterprise/frontend/**'
-    - 'docs/**'
-    - '**/package.json'
-    - '**/yarn.lock'
-    - '.github/workflows/**'
 
 jobs:
 
