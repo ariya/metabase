@@ -184,7 +184,7 @@ describe("scenarios > admin > databases > add", () => {
     );
   });
 
-  describe("BigQuery", () => {
+  describe.skip("BigQuery", () => {
     it("should let you upload the service account json from a file", () => {
       cy.visit("/admin/databases/create");
 
@@ -258,7 +258,7 @@ describe("scenarios > admin > databases > add", () => {
     });
   });
 
-  describe("Google Analytics ", () => {
+  describe.skip("Google Analytics ", () => {
     it("should generate well-formed external auth URLs", () => {
       cy.visit("/admin/databases/create");
       cy.contains("Database type")
