@@ -36,7 +36,7 @@ import {
   getShowHomepageXrays,
 } from "metabase/selectors/settings";
 
-const PAGE_PADDING = [1, 2, 4];
+const PAGE_PADDING = [2, 3, 5];
 const ROOT_COLLECTIONS_LOAD_LIMIT = 500;
 
 const getGreeting = createSelector(
@@ -73,11 +73,11 @@ class Overworld extends React.Component {
     } = this.props;
     return (
       <Box>
-        <Flex px={PAGE_PADDING} pt={3} pb={1} align="center">
+        <Flex px={PAGE_PADDING} pt={4} pb={2} align="center">
           <Tooltip tooltip={t`Don't tell anyone, but you're my favorite.`}>
             <MetabotLogo />
           </Tooltip>
-          <Box ml={2}>
+          <Box ml={3}>
             <Subhead>{greeting}</Subhead>
           </Box>
         </Flex>
@@ -92,10 +92,10 @@ class Overworld extends React.Component {
                       return null;
                     }
                     return (
-                      <Box mx={PAGE_PADDING} mt={[1, 3]}>
+                      <Box mx={PAGE_PADDING} mt={[2, 4]}>
                         {user.is_superuser && <AdminPinMessage />}
                         <Box
-                          mt={[1, 3]}
+                          mt={[2, 4]}
                           className="hover-parent hover--visibility"
                         >
                           <SectionHeading>
@@ -158,7 +158,7 @@ class Overworld extends React.Component {
             }
 
             return (
-              <Box px={PAGE_PADDING} mt={2}>
+              <Box px={PAGE_PADDING} mt={4}>
                 <SectionHeading>{t`Start here`}</SectionHeading>
                 <Grid>
                   {items.map(pin => {
@@ -374,13 +374,13 @@ export class AdminPinMessage extends React.Component {
 
         <Flex
           bg={color("bg-medium")}
-          p={2}
+          p={3}
           align="center"
           style={{ borderRadius: 6 }}
           className="hover-parent hover--visibility"
         >
-          <Icon name="dashboard" color={color("brand")} size={32} mr={1} />
-          <Box ml={1}>
+          <Icon name="dashboard" color={color("brand")} size={32} mr={2} />
+          <Box ml={2}>
             <h3>{t`Your team's most important dashboards go here`}</h3>
             <p className="m0 mt1 text-medium text-bold">{jt`Pin dashboards in ${link} to have them appear in this space for everyone`}</p>
           </Box>
@@ -397,7 +397,7 @@ export class AdminPinMessage extends React.Component {
 }
 
 const SectionHeading = ({ children }) => (
-  <Box mb={1}>
+  <Box mb={2}>
     <h5
       className="text-uppercase"
       style={{ color: color("text-medium"), fontWeight: 900 }}

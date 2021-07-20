@@ -194,8 +194,8 @@ export default class Navbar extends Component {
         className="Nav relative bg-brand text-white z3 flex-no-shrink"
         align="center"
         style={{ backgroundColor: color("nav") }}
-        py={1}
-        pr={2}
+        py={2}
+        pr={3}
       >
         <Flex style={{ minWidth: 64 }} align="center" justify="center">
           <Link
@@ -215,7 +215,7 @@ export default class Navbar extends Component {
             </Flex>
           </Link>
         </Flex>
-        <Flex className="flex-full z1" pr={2} align="center">
+        <Flex className="flex-full z1" pr={3} align="center">
           <Box w={1} style={{ maxWidth: 500 }}>
             <SearchBar
               location={this.props.location}
