@@ -3,30 +3,30 @@ import "regenerator-runtime/runtime";
 
 // Use of classList.add and .remove in Background and FitViewPort Hocs requires
 // this polyfill so that those work in older browsers
-import "classlist-polyfill";
+//import "classlist-polyfill";
 
-import "number-to-locale-string";
+//import "number-to-locale-string";
 
 // If enabled this monkeypatches `t` and `jt` to return blacked out
 // strings/elements to assist in finding untranslated strings.
-import "metabase/lib/i18n-debug";
+//import "metabase/lib/i18n-debug";
 
 // set the locale before loading anything else
-import { loadLocalization } from "metabase/lib/i18n";
+//import { loadLocalization } from "metabase/lib/i18n";
 
 // NOTE: why do we need to load this here?
 import "metabase/lib/colors";
 
 // NOTE: this loads all builtin plugins
-import "metabase/plugins/builtin";
+// import "metabase/plugins/builtin";
 
 // This is conditionally aliased in the webpack config.
 // If EE isn't enabled, it loads an empty file.
-import "ee-plugins"; // eslint-disable-line import/no-unresolved
+//import "ee-plugins"; // eslint-disable-line import/no-unresolved
 
-import { PLUGIN_APP_INIT_FUCTIONS } from "metabase/plugins";
+//import { PLUGIN_APP_INIT_FUCTIONS } from "metabase/plugins";
 
-import registerVisualizations from "metabase/visualizations/register";
+// import registerVisualizations from "metabase/visualizations/register";
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -39,20 +39,20 @@ import MetabaseAnalytics, {
 import MetabaseSettings from "metabase/lib/settings";
 
 import api from "metabase/lib/api";
-import { initializeEmbedding } from "metabase/lib/embed";
+//import { initializeEmbedding } from "metabase/lib/embed";
 
-import { getStore } from "./store";
+//import { getStore } from "./store";
 
-import { refreshSiteSettings } from "metabase/redux/settings";
+//import { refreshSiteSettings } from "metabase/redux/settings";
 
 // router
-import { Router, useRouterHistory } from "react-router";
-import { createHistory } from "history";
-import { syncHistoryWithStore } from "react-router-redux";
+//import { Router, useRouterHistory } from "react-router";
+//import { createHistory } from "history";
+//import { syncHistoryWithStore } from "react-router-redux";
 
 // drag and drop
-import HTML5Backend from "react-dnd-html5-backend";
-import { DragDropContextProvider } from "react-dnd";
+//import HTML5Backend from "react-dnd-html5-backend";
+//import { DragDropContextProvider } from "react-dnd";
 
 import styled from "styled-components";
 import { space } from "styled-system";
@@ -64,9 +64,11 @@ const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
 api.basename = BASENAME;
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
+/*
 const browserHistory = useRouterHistory(createHistory)({
   basename: BASENAME,
 });
+*/
 
 const theme = {
   spacex: [4, 8, 16, 32, 64, 128],
@@ -78,26 +80,34 @@ const Container = styled.div`
   background-color: red;
 `;
 
+/*
 const SearchBox = styled.input`
   ${space}
 `;
 
+      <Box m={3}>
+        <p>inside the box</p>
+      </Box>
+
+*/
+
 function _init(reducers, getRoutes, callback) {
+  /*
   const store = getStore(reducers, browserHistory);
   const routes = getRoutes(store);
   const history = syncHistoryWithStore(browserHistory, store);
+  */
 
   let root;
   ReactDOM.render(
     <ThemeProvider theme={theme}>
-      <Box m={4}>
-        <p>inside the box</p>
-      </Box>
+      <Container p={3} />
     </ThemeProvider>,
     document.getElementById("root"),
   );
 
   // listen for location changes and use that as a trigger for page view tracking
+  /*
   history.listen(location => {
     MetabaseAnalytics.trackPageView(location.pathname);
   });
@@ -128,14 +138,18 @@ function _init(reducers, getRoutes, callback) {
   });
 
   PLUGIN_APP_INIT_FUCTIONS.forEach(init => init({ root }));
+  */
 
   window.Metabase = window.Metabase || {};
-  window.Metabase.store = store;
+  //window.Metabase.store = store;
   window.Metabase.settings = MetabaseSettings;
+
+  /*
 
   if (callback) {
     callback(store);
   }
+  */
 }
 
 export function init(...args) {
