@@ -218,7 +218,6 @@
     ]
   },
   "resolutions": {
-    "styled-components": "3.2.6",
     "styled-system": "2.2.5"
   },
   "browserslist": [
