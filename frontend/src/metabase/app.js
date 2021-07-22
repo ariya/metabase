@@ -54,6 +54,10 @@ import { syncHistoryWithStore } from "react-router-redux";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContextProvider } from "react-dnd";
 
+import styled from "styled-components";
+import { space } from "styled-system";
+import { Box, Flex } from "grid-styled";
+
 // remove trailing slash
 const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
 
@@ -65,8 +69,18 @@ const browserHistory = useRouterHistory(createHistory)({
 });
 
 const theme = {
-  space: [4, 8, 16, 32, 64, 128],
+  spacex: [4, 8, 16, 32, 64, 128],
+  space: [3, 5, 7, 11, 13, 17],
 };
+
+const Container = styled.div`
+  ${space}
+  background-color: red;
+`;
+
+const SearchBox = styled.input`
+  ${space}
+`;
 
 function _init(reducers, getRoutes, callback) {
   const store = getStore(reducers, browserHistory);
@@ -75,13 +89,14 @@ function _init(reducers, getRoutes, callback) {
 
   let root;
   ReactDOM.render(
-    <Provider store={store} ref={ref => (root = ref)}>
-      <DragDropContextProvider backend={HTML5Backend} context={{ window }}>
-        <ThemeProvider theme={theme}>
-          <Router history={history}>{routes}</Router>
-        </ThemeProvider>
-      </DragDropContextProvider>
-    </Provider>,
+    <ThemeProvider theme={theme}>
+      <Box m={1}>
+        <p>Hello Metabase</p>
+        <Container p={1}>
+          <SearchBox p={2} m={3} value={"Search"} />
+        </Container>
+      </Box>
+    </ThemeProvider>,
     document.getElementById("root"),
   );
 
