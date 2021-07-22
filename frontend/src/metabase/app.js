@@ -90,11 +90,8 @@ function _init(reducers, getRoutes, callback) {
   let root;
   ReactDOM.render(
     <ThemeProvider theme={theme}>
-      <Box m={1}>
-        <p>Hello Metabase</p>
-        <Container p={1}>
-          <SearchBox p={2} m={3} value={"Search"} />
-        </Container>
+      <Box m={4}>
+        <p>inside the box</p>
       </Box>
     </ThemeProvider>,
     document.getElementById("root"),
