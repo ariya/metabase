@@ -12,26 +12,9 @@ import { singularize } from "metabase/lib/formatting";
 import { getAggregationOperatorsWithFields } from "metabase/lib/schema_metadata";
 import { memoize, createLookupByProperty } from "metabase-lib/lib/utils";
 
-import type { SchemaName } from "metabase-types/types/Table";
-import type StructuredQuery from "metabase-lib/lib/queries/StructuredQuery";
-
-type EntityType = string; // TODO: move somewhere central
-
 /** This is the primary way people interact with tables */
 export default class Table extends Base {
-  description: string;
-
-  db: Database;
-
-  schema: ?Schema;
-  // @deprecated: use schema.name (all tables should have a schema object, in theory)
-  schema_name: ?SchemaName;
-
-  fields: Field[];
-
-  entity_type: ?EntityType;
-
-  hasSchema(): boolean {
+  hasSchema() {
     return (this.schema_name && this.db && this.db.schemas.length > 1) || false;
   }
 
@@ -40,13 +23,19 @@ export default class Table extends Base {
     return this.db;
   }
 
-  newQuestion(): Question {
+  /**
+   * @returns {Question}
+   */
+  newQuestion() {
     return this.question()
       .setDefaultQuery()
       .setDefaultDisplay();
   }
 
-  question(): Question {
+  /**
+   * @returns {Question}
+   */
+  question() {
     return Question.create({
       databaseId: this.db && this.db.id,
       tableId: this.id,
@@ -54,7 +43,7 @@ export default class Table extends Base {
     });
   }
 
-  isSavedQuestion(): boolean {
+  isSavedQuestion() {
     return this.savedQuestionId() !== null;
   }
 
@@ -63,13 +52,19 @@ export default class Table extends Base {
     return match ? parseInt(match[1]) : null;
   }
 
-  query(query = {}): StructuredQuery {
+  /**
+   * @returns {StructuredQuery}
+   */
+  query(query = {}) {
     return this.question()
       .query()
       .updateQuery(q => ({ ...q, ...query }));
   }
 
-  dimensions(): Dimension[] {
+  /**
+   * @returns {Dimension[]}
+   */
+  dimensions() {
     return this.fields.map(field => field.dimension());
   }
 
@@ -89,7 +84,10 @@ export default class Table extends Base {
     return singularize(this.displayName());
   }
 
-  dateFields(): Field[] {
+  /**
+   * @returns {Field[]}
+   */
+  dateFields() {
     return this.fields.filter(field => field.isDate());
   }
 
@@ -130,4 +128,24 @@ export default class Table extends Base {
   get fields_lookup() {
     return this.fieldsLookup();
   }
+
+  /**
+   * @param {string} description
+   * @param {Database} db
+   * @param {?Schema} schema
+   * @param {Field[]} fields
+   * @param {import("./TableTypes").EntityType} entity_type
+   * @param {import("./TableTypes").SchemaName} schema_name
+   */
+  constructor(description, db, schema, fields, entity_type, schema_name) {
+    this.description = description;
+    this.db = db;
+    this.schema = schema;
+    this.fields = fields;
+    this.entity_type = entity_type;
+    this.schema_name = schema_name;
+  }
 }
+
+const table = new Table();
+table.entity_type = "bla";
