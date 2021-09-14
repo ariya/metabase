@@ -4,17 +4,17 @@ import { height } from "styled-system";
 
 import { color } from "metabase/lib/colors";
 
-const Avatar = styled(Flex).attrs({
-  align: "center",
-  justifyContent: "center",
-  height: ({ size }) => size,
-  width: ({ size }) => size,
-  fontSize: ({ size }) => size * 0.75,
-})`
-  ${height};
+const Avatar = styled(Flex)`
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
   font-weight: 900;
   line-height: 1;
+  color: ${props => props.color || "white"};
+  background-color: ${props => props.bg || color("brand")};
+  width: ${props => props.size || "3em"};
+  height: ${props => props.size || "3em"};
+  font-size: ${props => 0.75 * props.size || "2.25em"};
 `;
 
 Avatar.defaultProps = {
