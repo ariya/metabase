@@ -381,6 +381,13 @@ export default class StructuredQuery extends AtomicQuery {
   }
 
   cleanBreakouts(): StructuredQuery {
+    console.log('StructuredQuery.cleanBreakouts');
+    let query = this;
+    const listName = "breakouts";
+    for (let index = 0; index < query[listName]().length; index++) {
+      const clause = query[listName]()[index];
+      console.log('', index, clause);
+    }
     return this._cleanClauseList("breakouts");
   }
 
@@ -529,6 +536,7 @@ export default class StructuredQuery extends AtomicQuery {
    * @returns alias for addBreakout
    */
   breakout(breakout: Breakout | Dimension | Field): StructuredQuery {
+    console.log('StructuredQuery.breakout', { breakout });
     if (breakout instanceof Field) {
       breakout = breakout.dimension();
     }
@@ -549,6 +557,7 @@ export default class StructuredQuery extends AtomicQuery {
    * @returns alias for addSort
    */
   sort(sort: OrderBy) {
+    console.log('StructuredQuery.sort', { sort });
     return this.addSort(sort);
   }
 
@@ -761,6 +770,7 @@ export default class StructuredQuery extends AtomicQuery {
    * @returns {StructuredQuery} new query with the MBQL @type {Breakout} updated at the provided index.
    */
   updateBreakout(index: number, breakout: Breakout) {
+    console.log('StructuredQuery.updateBreakout', { index, breakout });
     return this._updateQuery(Q.updateBreakout, arguments);
   }
 
@@ -1531,6 +1541,7 @@ export default class StructuredQuery extends AtomicQuery {
     ) => StructuredQueryObject,
     args: any[] = [],
   ): StructuredQuery {
+    // console.log("Internal _updateQuery", { updateFunction, args})
     return this.setDatasetQuery(
       updateIn(this._datasetQuery, ["query"], query =>
         updateFunction(query, ...args),

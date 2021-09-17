@@ -197,6 +197,7 @@ export default class Question {
    * NOTE: this passes Question instead of card, unlike how Query passes dataset_query
    */
   update(update?: QuestionUpdateFn, ...args: any[]) {
+    // console.log('Question.update', { update, args });
     // TODO: if update returns a new card, create a new Question based on that and return it
     if (update) {
       update(this, ...args);

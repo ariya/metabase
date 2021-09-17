@@ -80,6 +80,7 @@ const SortPopover = ({
   if (!table) {
     return null;
   }
+  console.log('SortPopover', { sort, table });
   return (
     <FieldList
       className="text-green"

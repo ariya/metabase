@@ -124,6 +124,7 @@ export default class Query {
    * Helper for updating with functions that expect a DatasetQuery object, or proxy to parent question
    */
   update(update?: QueryUpdateFn, ...args: any[]) {
+    // console.log('Query.update', update, JSON.stringify(this.datasetQuery()), { update, args });
     if (update) {
       return update(this.datasetQuery(), ...args);
     } else {

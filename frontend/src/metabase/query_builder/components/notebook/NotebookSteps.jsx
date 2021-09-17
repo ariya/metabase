@@ -53,6 +53,7 @@ export default class NotebookSteps extends React.Component {
           // pass a version of updateQuery that cleans subsequent steps etc
           const updateQuery = async datasetQuery => {
             await step.update(datasetQuery).update();
+            // console.log('NotebookStep.jsx render updateQuery', JSON.stringify(datasetQuery.query));
             // mark the step as "closed" since we can assume it's been added or removed by the updateQuery
             this.closeStep(step.id);
           };

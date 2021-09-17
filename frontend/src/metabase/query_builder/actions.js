@@ -854,6 +854,10 @@ export const updateQuestion = (
   return async (dispatch, getState) => {
     const oldQuestion = getQuestion(getState());
 
+    // console.log('updateQuestion', { oldQuestion, newQuestion });
+    // console.log('updateQuestion from ', JSON.stringify(oldQuestion._card.dataset_query))
+    // console.log('                 to ', JSON.stringify(newQuestion._card.dataset_query))
+
     // TODO Atte Keinänen 6/2/2017 Ways to have this happen automatically when modifying a question?
     // Maybe the Question class or a QB-specific question wrapper class should know whether it's being edited or not?
     if (

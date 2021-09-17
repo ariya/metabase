@@ -256,6 +256,7 @@ export function getStageSteps(
       clean: query => STEP.clean(query, itemIndex),
       update: datasetQuery => {
         let newQuery = stageQuery.setDatasetQuery(datasetQuery);
+        // console.log('Step.update', id, { datasetQuery, stageQuery, newQuery });
         // clean each subsequent step individually. we have to do this rather than calling newQuery.clean() in case
         // the current step is in a temporarily invalid state
         let current = step;

@@ -176,18 +176,39 @@ function setAggregationClause(
 }
 function setBreakoutClause(query: SQ, breakoutClause: ?BreakoutClause): SQ {
   // NOTE: this doesn't handle complex cases
+  console.log('query.js setBreakoutClause');
+  console.log('  breakoutClause', JSON.stringify(breakoutClause));
+  console.log('  query', JSON.stringify(query));
   const breakoutIds = B.getBreakouts(breakoutClause)
     .map(b => FIELD_REF.getFieldTargetId(b))
     .filter(id => id != null);
+  console.log('  breakoutIds', JSON.stringify(breakoutIds));
   for (const [index, sort] of getOrderBys(query).entries()) {
-    const sortId = FIELD_REF.getFieldTargetId(sort[1]);
-    if (sortId != null && !_.contains(breakoutIds, sortId)) {
-      query = removeOrderBy(query, index);
+    const sortField = sort[1];
+    console.log('  sortField', JSON.stringify(sortField));
+    const sortId = FIELD_REF.getFieldTargetId(sortField);
+    console.log(index, JSON.stringify(sort));
+    if (sortId != null) {
+      // Remove invalid field reference
+      if (!_.contains(breakoutIds, sortId)) {
+        query = removeOrderBy(query, index);
+      } else {
+        // Update the field, since it can change its binning, temporal unit, etc
+        const breakoutFields = B.getBreakouts(breakoutClause);
+        const breakoutField = breakoutFields.find(field => FIELD_REF.getFieldTargetId(field) === sortId);
+        if (breakoutField) {
+          const direction = sort[0] === "asc" ? "desc" : "asc";
+          console.log('DUAR', { sortField, breakoutField });
+          query = updateOrderBy(query, index, [direction, breakoutField]);
+        }
+      }
     }
   }
   // clear fields when changing breakouts
   query = clearFields(query);
-  return setClause("breakout", query, breakoutClause);
+  const RESULT = setClause("breakout", query, breakoutClause);
+  console.log('  RESULT', JSON.stringify(RESULT));
+  return RESULT;
 }
 function setFilterClause(query: SQ, filterClause: ?FilterClause): SQ {
   return setClause("filter", query, filterClause);

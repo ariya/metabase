@@ -183,6 +183,7 @@ export class Api extends EventEmitter {
 
   // TODO Atte Keinänen 6/26/17: Replacing this with isomorphic-fetch could simplify the implementation
   _makeRequest(method, url, headers, body, data, options) {
+    // console.log("_makeRequest", JSON.stringify(body));
     return new Promise((resolve, reject) => {
       let isCancelled = false;
       const xhr = new XMLHttpRequest();

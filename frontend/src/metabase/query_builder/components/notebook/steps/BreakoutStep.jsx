@@ -35,11 +35,11 @@ export default function BreakoutStep({
         <BreakoutPopover
           query={query}
           breakout={breakout}
-          onChangeBreakout={newBreakout =>
-            breakout
-              ? breakout.replace(newBreakout).update(updateQuery)
+          onChangeBreakout={newBreakout => {
+            // console.log('Breakout change', { breakout, newBreakout }, JSON.stringify(query._datasetQuery.query));
+            return breakout ? breakout.replace(newBreakout).update(updateQuery)
               : query.breakout(newBreakout).update(updateQuery)
-          }
+          }}
         />
       )}
       isLastOpened={isLastOpened}
