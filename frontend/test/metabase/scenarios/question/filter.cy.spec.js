@@ -790,7 +790,7 @@ describe("scenarios > question > filter", () => {
     cy.button("Done").should("not.be.disabled");
   });
 
-  it.skip("custom expression filter should work with numeric value before an operator (metabase#15893)", () => {
+  it("custom expression filter should work with numeric value before an operator (metabase#15893)", () => {
     cy.intercept("POST", "/api/dataset").as("dataset");
 
     openOrdersTable({ mode: "notebook" });
