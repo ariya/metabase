@@ -12,6 +12,7 @@ export default function SortStep({
   isLastOpened,
   ...props
 }) {
+  const sortItems = query.sorts();
   return (
     <ClauseStep
       color={color}
