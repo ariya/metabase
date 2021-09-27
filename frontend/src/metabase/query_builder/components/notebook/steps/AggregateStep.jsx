@@ -36,13 +36,12 @@ export default function AggregateStep({
           query={query}
           aggregation={aggregation}
           onChangeAggregation={newAggregation => {
-            const RESULT = aggregation ? aggregation.replace(newAggregation).update(updateQuery)
-              : query.aggregate(newAggregation).update(updateQuery)
-              console.log('onChangeAggregation', { newAggregation, RESULT})
-              return RESULT;
-          }
-
-          }
+            const RESULT = aggregation
+              ? aggregation.replace(newAggregation).update(updateQuery)
+              : query.aggregate(newAggregation).update(updateQuery);
+            console.log("onChangeAggregation", { newAggregation, RESULT });
+            return RESULT;
+          }}
         />
       )}
       isLastOpened={isLastOpened}

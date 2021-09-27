@@ -21,7 +21,7 @@ export { drillDownForDimensions } from "./drilldown";
 
 export function aggregate(question: Question, aggregation): ?Question {
   const query = question.query();
-  console.log('aggregate', { question, aggregation, query });
+  console.log("aggregate", { question, aggregation, query });
   if (query instanceof StructuredQuery) {
     return query
       .aggregate(aggregation)
