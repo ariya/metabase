@@ -35,10 +35,13 @@ export default function AggregateStep({
         <AggregationPopover
           query={query}
           aggregation={aggregation}
-          onChangeAggregation={newAggregation =>
-            aggregation
-              ? aggregation.replace(newAggregation).update(updateQuery)
+          onChangeAggregation={newAggregation => {
+            const RESULT = aggregation ? aggregation.replace(newAggregation).update(updateQuery)
               : query.aggregate(newAggregation).update(updateQuery)
+              console.log('onChangeAggregation', { newAggregation, RESULT})
+              return RESULT;
+          }
+
           }
         />
       )}
