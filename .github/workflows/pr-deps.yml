@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
+
     - name: Prepare Node.js
       uses: actions/setup-node@v1
       with:
@@ -30,13 +31,14 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile --prefer-offline
 
-    - name: List changed source files
-      shell: bash
-      run: |
-        git fetch origin master
-        git diff origin/master..HEAD --name-only
+    - name: Get the base branch
+      run: git fetch origin master
 
-    - name: Find all other source files potentially affected directly
-      shell: bash
-      run: |
-        git diff origin/master..HEAD --name-only | node frontend/parse-deps.js filter-dependents
+    - name: List changed source files
+      run: git diff origin/master..HEAD --name-only
+
+    - name: Find other source files potentially affected directly
+      run: git diff origin/master..HEAD --name-only | node frontend/parse-deps.js filter-dependents
+
+    - name: Find ALL other source files potentially affected INdirectly
+      run: git diff origin/master..HEAD --name-only | node frontend/parse-deps.js filter-all-dependents
