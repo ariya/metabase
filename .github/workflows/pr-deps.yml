@@ -2,6 +2,15 @@ name: Source dependency analysis
 
 on:
   pull_request:
+    types: [opened, synchronize, edited, reopened]
+    paths:
+    - 'frontend/**'
+    - 'shared/**'
+    - 'enterprise/frontend/**'
+    - '**/package.json'
+    - '**/yarn.lock'
+    - '**/.eslintrc'
+    - '.github/workflows/**'
 
 jobs:
 
@@ -10,8 +19,24 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
-    - name: print-diff
+    - name: Prepare Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Get yarn cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - run: yarn install --frozen-lockfile --prefer-offline
+
+    - name: List changed source files
       shell: bash
       run: |
         git fetch origin master
-        git diff origin/master..HEAD
+        git diff origin/master..HEAD --name-only
+
+    - name: Find all other source files potentially affected directly
+      shell: bash
+      run: |
+        git diff origin/master..HEAD --name-only | node frontend/parse-deps.js filter-dependents
