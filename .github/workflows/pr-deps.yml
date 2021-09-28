@@ -14,4 +14,4 @@ jobs:
       shell: bash
       run: |
         git fetch origin master
-        git diff origin/main..HEAD
+        git diff origin/master..HEAD
