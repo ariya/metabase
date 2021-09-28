@@ -1,0 +1,17 @@
+name: Source dependency analysis
+
+on:
+  pull_request:
+
+jobs:
+
+  analyze-deps:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - name: print-diff
+      shell: bash
+      run: |
+        git fetch origin master
+        git diff origin/main..HEAD
