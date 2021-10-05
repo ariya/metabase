@@ -32,7 +32,6 @@ describe("issue 18069", () => {
       cy.findByText("Sum of ...").click();
 
       popover().within(() => {
-
         // regular fields
         cy.findByText("Price");
         cy.findByText("Rating");
