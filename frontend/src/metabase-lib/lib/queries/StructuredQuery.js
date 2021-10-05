@@ -635,13 +635,10 @@ export default class StructuredQuery extends AtomicQuery {
       //
       // A real solution would have a `dimensionOptions` method instead of `fieldOptions` which would
       // enable filtering based on dimension properties.
-      const compatibleDimensions = this.expressionDimensions().filter(d => {
-        return isCompatibleAggregationOperatorForField(
-          aggregation,
-          d.field(),
-        );
-      });
-      const RESULT = new DimensionOptions({
+      const compatibleDimensions = this.expressionDimensions().filter(d =>
+        isCompatibleAggregationOperatorForField(aggregation, d.field()),
+      );
+      return new DimensionOptions({
         ...fieldOptions,
         dimensions: _.uniq([
           ...compatibleDimensions,
@@ -650,7 +647,6 @@ export default class StructuredQuery extends AtomicQuery {
           ),
         ]),
       });
-      return RESULT;
     } else {
       return new DimensionOptions({ count: 0, fks: [], dimensions: [] });
     }
