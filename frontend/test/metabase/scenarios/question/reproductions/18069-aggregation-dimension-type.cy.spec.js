@@ -45,6 +45,10 @@ describe("issue 18069", () => {
         cy.findByText("CC_HalfPrice");
         cy.findByText("CC_ScaledRating").click();
       });
+
+      cy.button("Visualize").click();
+      cy.wait("@dataset");
+      cy.findByText("1,041.45");
     });
   });
 });
