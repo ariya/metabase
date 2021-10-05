@@ -7,6 +7,8 @@ import {
   format as formatExpression,
   DISPLAY_QUOTES,
 } from "metabase/lib/expressions/format";
+import { isCompatibleAggregationOperatorForField } from "metabase/lib/schema_metadata";
+
 
 import _ from "underscore";
 import { chain, updateIn } from "icepick";
@@ -634,15 +636,31 @@ export default class StructuredQuery extends AtomicQuery {
       //
       // A real solution would have a `dimensionOptions` method instead of `fieldOptions` which would
       // enable filtering based on dimension properties.
-      return new DimensionOptions({
+      const EXPR_DIMS = this.expressionDimensions();
+      const FILTERED_DIMS = EXPR_DIMS.filter(d => {
+        const field = d.field();
+        const COMPAT = isCompatibleAggregationOperatorForField(aggregation, d.field());
+        console.log(' checking', { field, COMPAT } );
+        return COMPAT;
+      });
+      const RESULT = new DimensionOptions({
         ...fieldOptions,
         dimensions: _.uniq([
-          ...this.expressionDimensions(),
+          ...FILTERED_DIMS,
           ...fieldOptions.dimensions.filter(
             d => !(d instanceof ExpressionDimension),
           ),
         ]),
       });
+      console.log('aggregationFieldOPtions', {
+        aggregation,
+        //fieldOptions,
+        EXPR_DIMS,
+        FILTERED_DIMS,
+        // expressionFields,
+        // RESULT,
+      });
+      return RESULT;
     } else {
       return new DimensionOptions({ count: 0, fks: [], dimensions: [] });
     }
