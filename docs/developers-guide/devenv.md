@@ -133,7 +133,7 @@ yarn test-unit-watch # Watch for file changes
 
 ## Backend development
 
-Clojure REPL is the main development tool for the backend. There are some directions below on how to setup your REPL for easier development.
+Clojure REPL is the main development tool for the backend. There are some directions [below](#developing-with-repl) on how to setup your REPL for easier development.
 
 And of course your Jetty development server is available via
 
@@ -216,6 +216,72 @@ clojure -X:dev:ee:ee-dev:drivers:drivers-dev:eastwood
 
 # Run the namespace checker
 clojure -X:dev:ee:ee-dev:drivers:drivers-dev:test:namespace-checker
+```
+### Developing with REPL
+
+In order to develop using this REPL you first have to "prep" the Java dependencies. Note that this step only needs to run once:
+
+```sh
+clojure -X:deps prep
+```
+also do 
+```sh
+cd modules/drivers && clojure -X:deps prep
+``` 
+if want to use `:drivers` alias to include driver source paths in the classpath.
+
+
+To start the repl you have 2 options:
+- If you want to use [nrepl](https://nrepl.org/nrepl/usage/server.html#using-clojure-cli-tools) to connect to your editor:
+```sh
+clojure -M:dev:nrepl
+```
+
+- If you prefer the clojure repl:
+```sh
+clojure -A:dev
+```
+
+Once inside the repl run
+```clojure
+(require 'dev)
+(dev/start!)
+```
+to start the Jetty development server
+
+## Developing with Visual Studio Code
+
+### Debugging
+
+First, install the following extension:
+* [Debugger for Firefox](https://marketplace.visualstudio.com/items?itemName=firefox-devtools.vscode-firefox-debug)
+
+_Note_: Debugger for Chrome has been deprecated. You can safely delete it as Visual Studio Code now has [a bundled JavaScript Debugger](https://github.com/microsoft/vscode-js-debug) that covers the same functionality.
+
+Before starting the debugging session, make sure that Metabase is built and running. Choose menu _View_, _Command Palette_, search for and choose _Tasks: Run Build Task_. Alternatively, use the corresponding shortcut `Ctrl+Shift+B`. The built-in terminal will appear to show the progress, wait a few moment until webpack indicates a complete (100%) bundling.
+
+To begin debugging Metabase, switch to the Debug view (shortcut: `Ctrl+Shift+D`) and then select one of the two launch configurations from the drop-down at the top:
+
+* Debug with Firefox, or
+* Debug with Chrome
+
+After that, begin the debugging session by choosing menu _Run_, _Start Debugging_ (shortcut: `F5`).
+
+For more details, please refer to the complete VS Code documentation on [Debugging](https://code.visualstudio.com/docs/editor/debugging).
+
+### Docker-based Workflow
+
+These instructions allow you to work on Metabase codebase on Windows, Linux, or macOS using [Visual Studio Code](https://code.visualstudio.com/), **without** manually installing the necessary dependencies. This is possible by leveraging Docker container and the Remote Containers extension from VS Code.
+
+For more details, please follow the complete VS Code guide on [Developing inside a Container](https://code.visualstudio.com/docs/remote/containers). The summary is as follows.
+
+Requirements:
+
+* [Visual Studio Code](https://code.visualstudio.com/) (obviously)
+* [Docker](https://www.docker.com/)
+* [Remote - Containers extension](vscode:extension/ms-vscode-remote.remote-containers) for VS Code
+
+_Important_: Ensure that Docker is running properly and it can be used to download an image and launch a container, e.g. by running:
 
 # Run clj-kondo
 clj-kondo --parallel --lint src shared/src enterprise/backend/src --config .clj-kondo/config.edn
