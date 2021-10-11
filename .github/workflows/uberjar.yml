@@ -117,6 +117,7 @@ jobs:
     name: e2e-tests-${{ matrix.folder }}-oss
     env:
       DISPLAY: ""
+      QA_DB_ENABLED: true
     strategy:
       fail-fast: false
       matrix:
@@ -127,6 +128,10 @@ jobs:
         ports:
           - "80:80"
           - "25:25"
+      postgres-sample:
+        image: metabase/qa-databases:postgres-sample-12
+        ports:
+          - "5432:5432"
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
