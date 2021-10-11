@@ -84,7 +84,7 @@ jobs:
       name: Check ns forms
 
   be-tests:
-    runs-on: buildjet-2vcpu-ubuntu-2004
+    runs-on: ubuntu-latest
     name: be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
     timeout-minutes: 15
     strategy:
@@ -155,3 +155,4 @@ jobs:
       if: always()
       with:
         report_paths: 'target/junit/**/*_test.xml'
+        check_name: JUnit Test Report be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
