@@ -119,6 +119,12 @@ jobs:
       fail-fast: false
       matrix:
         folder: [admin, binning, collections, dashboard, dashboard-filters, native, onboarding, question, sharing, smoketest, visualizations]
+    services:
+      maildev:
+        image: maildev/maildev
+        ports:
+          - "80:80"
+          - "25:25"
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
