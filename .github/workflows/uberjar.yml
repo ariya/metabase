@@ -115,6 +115,8 @@ jobs:
     timeout-minutes: 20
     needs: build
     name: e2e-tests-${{ matrix.folder }}-oss
+    env:
+      DISPLAY: ""
     strategy:
       fail-fast: false
       matrix:
