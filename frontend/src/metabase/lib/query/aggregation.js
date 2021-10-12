@@ -188,5 +188,5 @@ export function setField(aggregation: any, fieldRef: ConcreteField) {
 // MISC
 
 export function isSortable(aggregation: any) {
-  return SORTABLE_AGGREGATION_TYPES.has(getContent(aggregation)[0]);
+  return true;
 }
