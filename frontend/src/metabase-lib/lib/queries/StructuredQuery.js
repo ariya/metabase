@@ -947,8 +947,10 @@ export default class StructuredQuery extends AtomicQuery {
       }
       if (this.hasBreakouts()) {
         for (const aggregation of this.aggregations()) {
-          sortOptions.dimensions.push(aggregation.aggregationDimension());
-          sortOptions.count++;
+          if (aggregation.isSortable()) {
+            sortOptions.dimensions.push(aggregation.aggregationDimension());
+            sortOptions.count++;
+          }
         }
       }
 

@@ -276,4 +276,8 @@ export default class Aggregation extends MBQLClause {
       this._query,
     );
   }
+
+  isSortable() {
+    return AGGREGATION.isSortable(this);
+  }
 }
