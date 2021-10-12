@@ -174,9 +174,3 @@ export function setField(aggregation: any, fieldRef: ConcreteField) {
     return aggregation;
   }
 }
-
-// MISC
-
-export function isSortable(aggregation: any) {
-  return true;
-}
