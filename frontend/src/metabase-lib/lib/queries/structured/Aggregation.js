@@ -278,6 +278,6 @@ export default class Aggregation extends MBQLClause {
   }
 
   isSortable() {
-    return AGGREGATION.isSortable(this);
+    return true;
   }
 }

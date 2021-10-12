@@ -13,16 +13,6 @@ import type {
 } from "metabase-types/types/Query";
 import type { MetricId } from "metabase-types/types/Metric";
 
-export const SORTABLE_AGGREGATION_TYPES = new Set([
-  "avg",
-  "count",
-  "distinct",
-  "stddev",
-  "sum",
-  "min",
-  "max",
-]);
-
 // returns canonical list of Aggregations, i.e. with deprecated "rows" removed
 export function getAggregations(
   aggregation: ?AggregationClause,
