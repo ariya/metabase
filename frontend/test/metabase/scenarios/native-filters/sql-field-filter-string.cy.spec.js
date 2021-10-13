@@ -13,6 +13,7 @@ describe("scenarios > filters > sql filters > field filter > String", () => {
   beforeEach(() => {
     restore();
     cy.intercept("POST", "api/dataset").as("dataset");
+    cy.intercept("GET", "api/field").as("field");
 
     cy.signInAsAdmin();
     // Make sure feature flag is on regardles of the environment where this is running.
@@ -57,6 +58,7 @@ describe("scenarios > filters > sql filters > field filter > String", () => {
           FieldFilter.addDefaultStringFilter(value);
 
           SQLFilter.runQuery();
+          cy.wait("@field");
 
           cy.get(".Visualization").within(() => {
             cy.findByText(representativeResult);
