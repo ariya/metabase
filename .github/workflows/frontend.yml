@@ -58,6 +58,29 @@ jobs:
     - run: yarn run lint-eslint
       name: Run ESLint linter
 
+  fe-linter-type-check:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Get M2 cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-cljs-${{ hashFiles('**/shadow-cljs.edn') }}
+    - name: Get yarn cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - run: yarn run type-check
+      name: Run TypeScript type check
+
   fe-linter-docs-links:
     runs-on: ubuntu-20.04
     timeout-minutes: 10
