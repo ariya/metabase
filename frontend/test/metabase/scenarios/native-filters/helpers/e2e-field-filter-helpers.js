@@ -133,7 +133,9 @@ function addSimpleNumberFilter(value) {
  * @param {string} value
  */
 function enterDefaultValue(value) {
+  cy.wait(500);
   cy.findByPlaceholderText("Enter a default value...").type(value);
+  cy.wait(500);
   cy.button("Add filter").click();
 }
 
