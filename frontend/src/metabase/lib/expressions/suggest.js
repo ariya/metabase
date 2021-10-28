@@ -137,8 +137,7 @@ export function suggest({
   return {
     suggestions: _.chain(suggestions)
       .uniq(suggestion => suggestion.text)
-      .sortBy("text")
-      .sortBy("type")
+      .sortBy(suggestion => suggestion.name.toLowerCase())
       .value(),
   };
 }
