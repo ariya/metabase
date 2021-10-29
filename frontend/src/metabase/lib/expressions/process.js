@@ -5,7 +5,7 @@ export function processSource(options) {
   const parse = require("./parser").parse;
   const compile = require("./compile").compile;
 
-  const { source, targetOffset } = options;
+  const { source } = options;
 
   let expression;
   let compileError;
