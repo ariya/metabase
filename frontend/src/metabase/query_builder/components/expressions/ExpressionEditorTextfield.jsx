@@ -302,17 +302,8 @@ export default class ExpressionEditorTextfield extends React.Component {
     if (this.props.onBlankChange) {
       this.props.onBlankChange(source.length === 0);
     }
-    const showSuggestions = !hasSelection;
 
-    // don't show suggestions if
-    // * there's a selection
-    // * we're at the end of a valid expression, unless the user has typed another space
-    // const isValid = true; // FIXMW expression !== undefined;
-    // const isAtEnd = selectionEnd === source.length;
-    // const endsWithWhitespace = /\s$/.test(source);
-    // FIXME  !hasSelection && !(isValid && isAtEnd && !endsWithWhitespace);
-
-    this.setState({ suggestions: showSuggestions ? suggestions : [] });
+    this.setState({ suggestions: hasSelection ? [] : suggestions });
   }
 
   render() {
