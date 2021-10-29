@@ -15,8 +15,6 @@ import { tokenize } from "metabase/lib/expressions/tokenizer";
 import MetabaseSettings from "metabase/lib/settings";
 import colors from "metabase/lib/colors";
 
-import memoize from "lodash.memoize";
-
 import { setCaretPosition, getSelectionPosition } from "metabase/lib/dom";
 
 import {
@@ -97,12 +95,6 @@ const ErrorMessage = ({ error }) => {
 export default class ExpressionEditorTextfield extends React.Component {
   constructor() {
     super();
-    // memoize processSource for performance when editing previously seen source/targetOffset
-    this._processSource = memoize(processSource, ({ source, targetOffset }) =>
-      // resovle should include anything that affect the results of processSource
-      // except currently we exclude `startRule` and `query` since they shouldn't change
-      [source, targetOffset].join(","),
-    );
     this.input = React.createRef();
   }
 
@@ -191,15 +183,15 @@ export default class ExpressionEditorTextfield extends React.Component {
     }
 
     if (!suggestions.length) {
-      if (
-        e.keyCode === KEYCODE_ENTER &&
-        this.props.onCommit &&
-        this.state.expression != null
-      ) {
-        this.props.onCommit(this.state.expression);
+      if (e.keyCode === KEYCODE_ENTER && this.props.onCommit) {
+        const expression = this._compileExpression();
+        if (isExpression(expression)) {
+          this.props.onCommit(expression);
+        }
       }
       return;
     }
+
     if (e.keyCode === KEYCODE_ENTER) {
       this.onSuggestionSelected(highlightedSuggestionIndex);
       e.preventDefault();
@@ -228,6 +220,18 @@ export default class ExpressionEditorTextfield extends React.Component {
     });
   }
 
+  _compileExpression() {
+    const { source } = this.state;
+    if (!source || source.length === 0) {
+      return null;
+    }
+    const { query, startRule } = this.props;
+    const { expression } = processSource({ source, query, startRule });
+
+    console.log("_compileExpression", source, expression);
+    return expression;
+  }
+
   onInputBlur = e => {
     // Switching to another window also triggers the blur event.
     // When our window gets focus again, the input will automatically
@@ -246,11 +250,12 @@ export default class ExpressionEditorTextfield extends React.Component {
     this.setState({ errorMessage });
 
     // whenever our input blurs we push the updated expression to our parent if valid
-    if (this.state.expression) {
-      if (!isExpression(this.state.expression)) {
-        console.warn("isExpression=false", this.state.expression);
+    const expression = this._compileExpression();
+    if (expression) {
+      if (!isExpression(expression)) {
+        console.warn("isExpression=false", expression);
       }
-      this.props.onChange(this.state.expression);
+      this.props.onChange(expression);
     } else if (errorMessage) {
       this.props.onError(errorMessage);
     } else {
@@ -279,56 +284,36 @@ export default class ExpressionEditorTextfield extends React.Component {
       return;
     }
 
+    this.setState({ source });
+    this.clearSuggestions();
+
     const [selectionStart, selectionEnd] = getSelectionPosition(inputElement);
     const hasSelection = selectionStart !== selectionEnd;
-    const isAtEnd = selectionEnd === source.length;
-    const endsWithWhitespace = /\s$/.test(source);
     const targetOffset = !hasSelection ? selectionEnd : null;
 
     const { query, startRule } = this.props;
+    const { suggestions, helpText } = suggest({
+      query,
+      startRule,
+      source,
+      targetOffset,
+    });
+    this.setState({ suggestions, helpText });
 
-    const { expression, helpText } = source
-      ? this._processSource({
-          source,
-          targetOffset,
-          query,
-          startRule,
-        })
-      : {
-          expression: null,
-          helpText: null,
-        };
-
-    const { suggestions } = suggest({ query, startRule, source, targetOffset });
-
-    const isValid = expression !== undefined;
     if (this.props.onBlankChange) {
       this.props.onBlankChange(source.length === 0);
     }
+    const showSuggestions = !hasSelection;
+
     // don't show suggestions if
     // * there's a selection
     // * we're at the end of a valid expression, unless the user has typed another space
-    const showSuggestions =
-      !hasSelection && !(isValid && isAtEnd && !endsWithWhitespace);
+    // const isValid = true; // FIXMW expression !== undefined;
+    // const isAtEnd = selectionEnd === source.length;
+    // const endsWithWhitespace = /\s$/.test(source);
+    // FIXME  !hasSelection && !(isValid && isAtEnd && !endsWithWhitespace);
 
-    this.setState({
-      source,
-      expression,
-      errorMessage: null,
-      suggestions: showSuggestions ? suggestions : [],
-      helpText,
-      highlightedSuggestionIndex: 0,
-    });
-
-    if (!source || source.length <= 0) {
-      const { suggestions } = this._processSource({
-        source,
-        targetOffset,
-        query,
-        startRule,
-      });
-      this.setState({ suggestions });
-    }
+    this.setState({ suggestions: showSuggestions ? suggestions : [] });
   }
 
   render() {
