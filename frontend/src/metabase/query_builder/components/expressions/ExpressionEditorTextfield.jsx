@@ -136,22 +136,15 @@ export default class ExpressionEditorTextfield extends React.Component {
     if (!this.state || !_.isEqual(this.props.expression, newProps.expression)) {
       const parserOptions = this._getParserOptions(newProps);
       const source = format(newProps.expression, parserOptions);
+      this.setState({ source });
 
       const { expression } =
         source && source.length
-          ? this._processSource({
-              source,
-              ...this._getParserOptions(newProps),
-            })
-          : {
-              expression: null,
-            };
-      this.setState({
-        source,
-        expression,
-        suggestions: [],
-        highlightedSuggestionIndex: 0,
-      });
+          ? this._processSource({ source, ...parserOptions })
+          : { expression: null };
+      this.setState({ expression });
+
+      this.clearSuggestions();
     }
   }
 
