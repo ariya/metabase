@@ -35,7 +35,7 @@ import ExplicitSize from "metabase/components/ExplicitSize";
 
 import TokenizedInput from "./TokenizedInput";
 
-import { getMBQLName, isExpression } from "metabase/lib/expressions";
+import { isExpression } from "metabase/lib/expressions";
 
 import ExpressionEditorSuggestions from "./ExpressionEditorSuggestions";
 
@@ -133,17 +133,10 @@ export default class ExpressionEditorTextfield extends React.Component {
 
   UNSAFE_componentWillReceiveProps(newProps) {
     // we only refresh our state if we had no previous state OR if our expression changed
-    if (!this.state || !_.isEqual(this.props.expression, newProps.expression)) {
-      const parserOptions = this._getParserOptions(newProps);
-      const source = format(newProps.expression, parserOptions);
-      this.setState({ source });
-
-      const { expression } =
-        source && source.length
-          ? this._processSource({ source, ...parserOptions })
-          : { expression: null };
-      this.setState({ expression });
-
+    const { expression, query, startRule } = newProps;
+    if (!this.state || !_.isEqual(this.props.expression, expression)) {
+      const source = format(expression, { query, startRule });
+      this.setState({ source, expression });
       this.clearSuggestions();
     }
   }
