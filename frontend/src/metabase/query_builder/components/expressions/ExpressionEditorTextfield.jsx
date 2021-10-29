@@ -120,13 +120,6 @@ export default class ExpressionEditorTextfield extends React.Component {
     placeholder: "write some math!",
   };
 
-  _getParserOptions(props = this.props) {
-    return {
-      query: props.query,
-      startRule: props.startRule,
-    };
-  }
-
   UNSAFE_componentWillMount() {
     this.UNSAFE_componentWillReceiveProps(this.props);
   }
@@ -292,18 +285,20 @@ export default class ExpressionEditorTextfield extends React.Component {
     const endsWithWhitespace = /\s$/.test(source);
     const targetOffset = !hasSelection ? selectionEnd : null;
 
+    const { query, startRule } = this.props;
+
     const { expression, helpText } = source
       ? this._processSource({
           source,
           targetOffset,
-          ...this._getParserOptions(),
+          query,
+          startRule,
         })
       : {
           expression: null,
           helpText: null,
         };
 
-    const { query, startRule } = this.props;
     const { suggestions } = suggest({ query, startRule, source, targetOffset });
 
     const isValid = expression !== undefined;
@@ -329,7 +324,8 @@ export default class ExpressionEditorTextfield extends React.Component {
       const { suggestions } = this._processSource({
         source,
         targetOffset,
-        ...this._getParserOptions(),
+        query,
+        startRule,
       });
       this.setState({ suggestions });
     }
@@ -367,7 +363,6 @@ export default class ExpressionEditorTextfield extends React.Component {
           placeholder={placeholder}
           value={source}
           startRule={this.props.startRule}
-          parserOptions={this._getParserOptions()}
           onChange={e => this.onExpressionChange(e.target.value)}
           onKeyDown={this.onInputKeyDown}
           onBlur={this.onInputBlur}
