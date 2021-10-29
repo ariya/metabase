@@ -23,21 +23,6 @@ export function diagnose(source, startRule, query) {
     return errors[0];
   }
 
-  const mismatchedParentheses = countMatchingParentheses(tokens);
-  const message =
-    mismatchedParentheses === 1
-      ? t`Expecting a closing parenthesis`
-      : mismatchedParentheses > 1
-      ? t`Expecting ${mismatchedParentheses} closing parentheses`
-      : mismatchedParentheses === -1
-      ? t`Expecting an opening parenthesis`
-      : mismatchedParentheses < -1
-      ? t`Expecting ${-mismatchedParentheses} opening parentheses`
-      : null;
-  if (message) {
-    return { message };
-  }
-
   for (let i = 0; i < tokens.length - 1; ++i) {
     const token = tokens[i];
     if (token.type === TOKEN.Identifier && source[token.start] !== "[") {
@@ -51,6 +36,21 @@ export function diagnose(source, startRule, query) {
         }
       }
     }
+  }
+
+  const mismatchedParentheses = countMatchingParentheses(tokens);
+  const message =
+    mismatchedParentheses === 1
+      ? t`Expecting a closing parenthesis`
+      : mismatchedParentheses > 1
+      ? t`Expecting ${mismatchedParentheses} closing parentheses`
+      : mismatchedParentheses === -1
+      ? t`Expecting an opening parenthesis`
+      : mismatchedParentheses < -1
+      ? t`Expecting ${-mismatchedParentheses} opening parentheses`
+      : null;
+  if (message) {
+    return { message };
   }
 
   const { compileError } = processSource({ source, query, startRule });
