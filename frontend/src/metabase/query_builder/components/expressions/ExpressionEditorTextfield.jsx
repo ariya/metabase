@@ -228,7 +228,6 @@ export default class ExpressionEditorTextfield extends React.Component {
     const { query, startRule } = this.props;
     const { expression } = processSource({ source, query, startRule });
 
-    console.log("_compileExpression", source, expression);
     return expression;
   }
 
