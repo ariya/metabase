@@ -18,9 +18,13 @@ export function diagnose(source, startRule, query) {
     return null;
   }
 
-  const { tokens, errors: tokenizerError } = tokenize(source);
+  const { tokens, errors } = tokenize(source);
+  if (errors && errors.length > 0) {
+    return errors[0];
+  }
+
   const mismatchedParentheses = countMatchingParentheses(tokens);
-  const mismatchedError =
+  const message =
     mismatchedParentheses === 1
       ? t`Expecting a closing parenthesis`
       : mismatchedParentheses > 1
@@ -30,10 +34,8 @@ export function diagnose(source, startRule, query) {
       : mismatchedParentheses < -1
       ? t`Expecting ${-mismatchedParentheses} opening parentheses`
       : null;
-  if (mismatchedError) {
-    tokenizerError.push({
-      message: mismatchedError,
-    });
+  if (message) {
+    return { message };
   }
 
   for (let i = 0; i < tokens.length - 1; ++i) {
@@ -43,9 +45,9 @@ export function diagnose(source, startRule, query) {
       if (getMBQLName(functionName)) {
         const next = tokens[i + 1];
         if (next.op !== OPERATOR.OpenParenthesis) {
-          tokenizerError.unshift({
+          return {
             message: t`Expecting an opening parenthesis after function ${functionName}`,
-          });
+          };
         }
       }
     }
@@ -53,14 +55,11 @@ export function diagnose(source, startRule, query) {
 
   const { compileError } = processSource({ source, query, startRule });
 
-  let displayError = [...tokenizerError];
   if (compileError) {
-    if (Array.isArray(compileError)) {
-      displayError = [...displayError, ...compileError];
-    } else {
-      displayError.push(compileError);
-    }
+    return Array.isArray(compileError) && compileError.length > 0
+      ? compileError[0]
+      : compileError;
   }
 
-  return displayError;
+  return null;
 }

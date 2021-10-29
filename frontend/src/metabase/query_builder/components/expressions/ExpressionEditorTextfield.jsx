@@ -256,10 +256,8 @@ export default class ExpressionEditorTextfield extends React.Component {
     const { query, startRule } = this.props;
     const { source } = this.state;
 
-    const displayError = diagnose(source, startRule, query);
-    const priorityError = _.first(displayError);
-
-    this.setState({ priorityError });
+    const errorMessage = diagnose(source, startRule, query);
+    this.setState({ errorMessage });
 
     // whenever our input blurs we push the updated expression to our parent if valid
     if (this.state.expression) {
@@ -267,8 +265,8 @@ export default class ExpressionEditorTextfield extends React.Component {
         console.warn("isExpression=false", this.state.expression);
       }
       this.props.onChange(this.state.expression);
-    } else if (displayError && displayError.length > 0) {
-      this.props.onError(displayError);
+    } else if (errorMessage) {
+      this.props.onError(errorMessage);
     } else {
       this.props.onError({ message: t`Invalid expression` });
     }
@@ -328,7 +326,7 @@ export default class ExpressionEditorTextfield extends React.Component {
     this.setState({
       source,
       expression,
-      priorityError: null,
+      errorMessage: null,
       suggestions: showSuggestions ? suggestions : [],
       helpText,
       highlightedSuggestionIndex: 0,
@@ -346,7 +344,7 @@ export default class ExpressionEditorTextfield extends React.Component {
 
   render() {
     const { placeholder } = this.props;
-    const { source, suggestions, priorityError } = this.state;
+    const { source, suggestions, errorMessage } = this.state;
 
     const inputClassName = cx("input text-bold text-monospace", {
       "text-dark": source,
@@ -370,7 +368,7 @@ export default class ExpressionEditorTextfield extends React.Component {
           ref={this.input}
           type="text"
           className={cx(inputClassName, {
-            "border-error": priorityError,
+            "border-error": errorMessage,
           })}
           style={{ ...inputStyle, paddingLeft: 26, whiteSpace: "pre-wrap" }}
           placeholder={placeholder}
@@ -384,7 +382,7 @@ export default class ExpressionEditorTextfield extends React.Component {
           onClick={this.onInputClick}
           autoFocus
         />
-        <ErrorMessage error={priorityError} />
+        <ErrorMessage error={errorMessage} />
         <HelpText helpText={this.state.helpText} width={this.props.width} />
         <ExpressionEditorSuggestions
           suggestions={suggestions}
