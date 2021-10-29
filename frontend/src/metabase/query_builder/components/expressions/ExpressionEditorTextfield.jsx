@@ -7,6 +7,7 @@ import _ from "underscore";
 import cx from "classnames";
 
 import { format } from "metabase/lib/expressions/format";
+import { suggest } from "metabase/lib/expressions/suggest";
 import { processSource } from "metabase/lib/expressions/process";
 import {
   tokenize,
@@ -317,7 +318,7 @@ export default class ExpressionEditorTextfield extends React.Component {
     const endsWithWhitespace = /\s$/.test(source);
     const targetOffset = !hasSelection ? selectionEnd : null;
 
-    const { expression, compileError, suggestions, helpText } = source
+    const { expression, compileError, helpText } = source
       ? this._processSource({
           source,
           targetOffset,
@@ -326,9 +327,11 @@ export default class ExpressionEditorTextfield extends React.Component {
       : {
           expression: null,
           compileError: null,
-          suggestions: [],
           helpText: null,
         };
+
+    const { query, startRule } = this.props;
+    const { suggestions } = suggest({ query, startRule, source, targetOffset });
 
     const isValid = expression !== undefined;
     if (this.props.onBlankChange) {
