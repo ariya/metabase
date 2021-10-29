@@ -1,13 +1,17 @@
 import { t } from "ttag";
 
-import {
-  tokenize,
-  countMatchingParentheses,
-  TOKEN,
-  OPERATOR as OP,
-} from "metabase/lib/expressions/tokenizer";
+import { tokenize, TOKEN, OPERATOR } from "metabase/lib/expressions/tokenizer";
 import { getMBQLName } from "metabase/lib/expressions";
 import { processSource } from "metabase/lib/expressions/process";
+
+// e.g. "COUNTIF(([Total]-[Tax] <5" returns 2 (missing parentheses)
+export function countMatchingParentheses(tokens) {
+  const isOpen = t => t.op === OPERATOR.OpenParenthesis;
+  const isClose = t => t.op === OPERATOR.CloseParenthesis;
+  const count = (c, token) =>
+    isOpen(token) ? c + 1 : isClose(token) ? c - 1 : c;
+  return tokens.reduce(count, 0);
+}
 
 export function diagnose(source, startRule, query) {
   if (!source || source.length === 0) {
@@ -38,7 +42,7 @@ export function diagnose(source, startRule, query) {
       const functionName = source.slice(token.start, token.end);
       if (getMBQLName(functionName)) {
         const next = tokens[i + 1];
-        if (next.op !== OP.OpenParenthesis) {
+        if (next.op !== OPERATOR.OpenParenthesis) {
           tokenizerError.unshift({
             message: t`Expecting an opening parenthesis after function ${functionName}`,
           });
