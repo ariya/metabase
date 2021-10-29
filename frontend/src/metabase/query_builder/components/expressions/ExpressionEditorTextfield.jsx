@@ -42,6 +42,51 @@ import { getMBQLName, isExpression } from "metabase/lib/expressions";
 
 import ExpressionEditorSuggestions from "./ExpressionEditorSuggestions";
 
+function getTokenizerError(source) {
+  const { tokens, errors: tokenizerError } = tokenize(source);
+  const mismatchedParentheses = countMatchingParentheses(tokens);
+  const mismatchedError =
+    mismatchedParentheses === 1
+      ? t`Expecting a closing parenthesis`
+      : mismatchedParentheses > 1
+      ? t`Expecting ${mismatchedParentheses} closing parentheses`
+      : mismatchedParentheses === -1
+      ? t`Expecting an opening parenthesis`
+      : mismatchedParentheses < -1
+      ? t`Expecting ${-mismatchedParentheses} opening parentheses`
+      : null;
+  if (mismatchedError) {
+    tokenizerError.push({
+      message: mismatchedError,
+    });
+  }
+
+  for (let i = 0; i < tokens.length - 1; ++i) {
+    const token = tokens[i];
+    if (token.type === TOKEN.Identifier && source[token.start] !== "[") {
+      const functionName = source.slice(token.start, token.end);
+      if (getMBQLName(functionName)) {
+        const next = tokens[i + 1];
+        if (next.op !== OP.OpenParenthesis) {
+          tokenizerError.unshift({
+            message: t`Expecting an opening parenthesis after function ${functionName}`,
+          });
+        }
+      }
+    }
+  }
+
+  return tokenizerError;
+}
+
+function getCompilerError(source, query, startRule) {
+  if (!source || source.length === 0) {
+    return [];
+  }
+  const { compileError } = processSource({ source, query, startRule });
+  return compileError;
+}
+
 const HelpText = ({ helpText, width }) =>
   helpText ? (
     <Popover
@@ -140,7 +185,7 @@ export default class ExpressionEditorTextfield extends React.Component {
       const parserOptions = this._getParserOptions(newProps);
       const source = format(newProps.expression, parserOptions);
 
-      const { expression, compileError } =
+      const { expression } =
         source && source.length
           ? this._processSource({
               source,
@@ -148,14 +193,10 @@ export default class ExpressionEditorTextfield extends React.Component {
             })
           : {
               expression: null,
-              tokenizerError: [],
-              compileError: null,
             };
       this.setState({
         source,
         expression,
-        tokenizeError: [],
-        compileError,
         suggestions: [],
         highlightedSuggestionIndex: 0,
       });
@@ -267,7 +308,14 @@ export default class ExpressionEditorTextfield extends React.Component {
 
     this.clearSuggestions();
 
-    const { tokenizerError, compileError } = this.state;
+    const { source } = this.state;
+    console.log("onINputBlur", { source });
+
+    const tokenizerError = getTokenizerError(source);
+
+    const { query, startRule } = this.props;
+    const compileError = getCompilerError(source, query, startRule);
+
     let displayError = [...tokenizerError];
     if (compileError) {
       if (Array.isArray(compileError)) {
@@ -312,13 +360,15 @@ export default class ExpressionEditorTextfield extends React.Component {
       return;
     }
 
+    console.log("onExpressionChange", source);
+
     const [selectionStart, selectionEnd] = getSelectionPosition(inputElement);
     const hasSelection = selectionStart !== selectionEnd;
     const isAtEnd = selectionEnd === source.length;
     const endsWithWhitespace = /\s$/.test(source);
     const targetOffset = !hasSelection ? selectionEnd : null;
 
-    const { expression, compileError, helpText } = source
+    const { expression, helpText } = source
       ? this._processSource({
           source,
           targetOffset,
@@ -326,7 +376,6 @@ export default class ExpressionEditorTextfield extends React.Component {
         })
       : {
           expression: null,
-          compileError: null,
           helpText: null,
         };
 
@@ -343,44 +392,9 @@ export default class ExpressionEditorTextfield extends React.Component {
     const showSuggestions =
       !hasSelection && !(isValid && isAtEnd && !endsWithWhitespace);
 
-    const { tokens, errors: tokenizerError } = tokenize(source);
-    const mismatchedParentheses = countMatchingParentheses(tokens);
-    const mismatchedError =
-      mismatchedParentheses === 1
-        ? t`Expecting a closing parenthesis`
-        : mismatchedParentheses > 1
-        ? t`Expecting ${mismatchedParentheses} closing parentheses`
-        : mismatchedParentheses === -1
-        ? t`Expecting an opening parenthesis`
-        : mismatchedParentheses < -1
-        ? t`Expecting ${-mismatchedParentheses} opening parentheses`
-        : null;
-    if (mismatchedError) {
-      tokenizerError.push({
-        message: mismatchedError,
-      });
-    }
-
-    for (let i = 0; i < tokens.length - 1; ++i) {
-      const token = tokens[i];
-      if (token.type === TOKEN.Identifier && source[token.start] !== "[") {
-        const functionName = source.slice(token.start, token.end);
-        if (getMBQLName(functionName)) {
-          const next = tokens[i + 1];
-          if (next.op !== OP.OpenParenthesis) {
-            tokenizerError.unshift({
-              message: t`Expecting an opening parenthesis after function ${functionName}`,
-            });
-          }
-        }
-      }
-    }
-
     this.setState({
       source,
       expression,
-      tokenizerError,
-      compileError,
       displayError: null,
       suggestions: showSuggestions ? suggestions : [],
       helpText,
