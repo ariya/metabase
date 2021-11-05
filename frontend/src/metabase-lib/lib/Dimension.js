@@ -1096,12 +1096,21 @@ export class ExpressionDimension extends Dimension {
       }
     }
 
+    let dimension_options;
+    if (base_type === "type/Float") {
+      dimension_options = [
+        { name: "Auto bin", mbql: this.mbql(), type: "type/Number "},
+        { name: "10 bins", mbql: this.mbql(), type: "type/Number "}
+      ];
+    }
+
     return new Field({
       id: this.mbql(),
       name: this.name(),
       display_name: this.displayName(),
       semantic_type: null,
       base_type,
+      dimension_options,
       query,
       table,
     });
