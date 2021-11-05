@@ -2,6 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 
+import { color } from "metabase/lib/colors";
+
+import Icon from "metabase/components/Icon";
 import Popover from "metabase/components/Popover";
 import { ListItemStyled, UlStyled } from "./ExpressionEditorSuggestions.styled";
 
@@ -9,10 +12,10 @@ import { isObscured } from "metabase/lib/dom";
 
 const SuggestionSpan = ({ suggestion, isHighlighted }) => {
   const className = cx("text-dark text-bold hover-child", {
-    "bg-brand": isHighlighted,
+    "text-white bg-brand": isHighlighted,
   });
 
-  return suggestion.range ? (
+  return !isHighlighted && suggestion.range ? (
     <span>
       {suggestion.name.slice(0, suggestion.range[0])}
       <span className={className}>
@@ -29,6 +32,25 @@ SuggestionSpan.propTypes = {
   suggestion: PropTypes.object,
   isHighlighted: PropTypes.bool,
 };
+
+function iconForType(type) {
+  const altColor = color("brand-white");
+  switch (type) {
+    case "functions":
+      return { icon: "sum", color: color("accent3"), altColor };
+    case "fields":
+      return { icon: "ellipsis", color: color("accent3"), altColor };
+    case "segments":
+      return { icon: "segment", color: color("accent2"), altColor };
+    case "metrics":
+      return { icon: "insight", color: color("accent1"), altColor };
+    case "aggregations":
+      return { icon: "sum", color: color("brand"), altColor };
+
+    default:
+      return { icon: "search", color: color("brand"), altColor };
+  }
+}
 
 export default class ExpressionEditorSuggestions extends React.Component {
   static propTypes = {
@@ -75,6 +97,8 @@ export default class ExpressionEditorSuggestions extends React.Component {
         <UlStyled>
           {suggestions.map((suggestion, i) => {
             const isHighlighted = i === highlightedIndex;
+            const { icon, color, altColor } = iconForType(suggestion.type);
+            const effectiveColor = isHighlighted ? altColor : color;
 
             return (
               <React.Fragment key={`suggestion-${i}`}>
@@ -82,6 +106,12 @@ export default class ExpressionEditorSuggestions extends React.Component {
                   onMouseDownCapture={e => this.onSuggestionMouseDown(e, i)}
                   isHighlighted={isHighlighted}
                 >
+                  <Icon
+                    name={icon}
+                    color={effectiveColor}
+                    size="10"
+                    className="mr1"
+                  />
                   <SuggestionSpan
                     suggestion={suggestion}
                     isHighlighted={isHighlighted}
