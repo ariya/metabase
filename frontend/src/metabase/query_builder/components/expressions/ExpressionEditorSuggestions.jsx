@@ -8,8 +8,8 @@ import { ListItemStyled, UlStyled } from "./ExpressionEditorSuggestions.styled";
 import { isObscured } from "metabase/lib/dom";
 
 const SuggestionSpan = ({ suggestion, isHighlighted }) => {
-  const className = cx("text-brand text-bold hover-child", {
-    "text-white bg-brand": isHighlighted,
+  const className = cx("text-dark text-bold hover-child", {
+    "bg-brand": isHighlighted,
   });
 
   return suggestion.range ? (
