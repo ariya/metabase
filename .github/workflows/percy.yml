@@ -50,6 +50,3 @@ jobs:
 
       - run: yarn install --frozen-lockfile --prefer-offline
 
-      - name: Percy Test
-        run: yarn run test-visual-no-build
-
