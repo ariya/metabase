@@ -1,10 +1,6 @@
 const SRC_PATH = __dirname + "/frontend/src/metabase";
 const BUILD_PATH = __dirname + "/resources/frontend_client";
 
-const BABEL_CONFIG = {
-  cacheDirectory: process.env.BABEL_DISABLE_CACHE ? null : ".babel_cache",
-};
-
 module.exports = {
   mode: "production",
   context: SRC_PATH,
@@ -33,18 +29,14 @@ module.exports = {
       {
         test: /\.(tsx?|jsx?)$/,
         exclude: /node_modules/,
-        use: [{ loader: "babel-loader", options: BABEL_CONFIG }],
-      },
-      {
-        test: /\.(tsx?|jsx?)$/,
-        exclude: /node_modules/,
         use: [
           {
-            loader: "eslint-loader",
+            loader: "esbuild-loader",
             options: {
-              rulePaths: [__dirname + "/frontend/lint/eslint-rules"],
-            },
-          },
+              loader: "tsx",
+              target: "es2015",
+            }
+          }
         ],
       },
     ],
