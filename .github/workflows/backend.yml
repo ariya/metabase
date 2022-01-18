@@ -18,6 +18,10 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
+    - name: Prepare Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
     - name: Prepare JDK 8
       uses: actions/setup-java@v2
       with:
@@ -31,6 +35,19 @@ jobs:
       run: |
         java -version
         clojure --version
+        node --version
+        yarn --version
+
+    - name: Get yarn cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Get node_modules cache
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
     - name: Get M2 cache
       uses: actions/cache@v2
       with:
@@ -38,6 +55,11 @@ jobs:
           ~/.m2
           ~/.gitlibs
         key: ${{ runner.os }}-m2-jdk8-${{ hashFiles('**/deps.edn') }}
+
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
+
     - name: Compile Java source file(s)
       run: clojure -X:deps prep
     - name: Compile driver AOT namespaces
