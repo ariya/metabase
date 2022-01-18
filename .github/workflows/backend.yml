@@ -1,7 +1,6 @@
 name: Backend
 
 on:
-  pull_request:
   push:
     branches:
       - '**'
@@ -9,13 +8,23 @@ on:
     - 'src/**'
     - 'enterprise/backend/**'
     - '**/deps.edn'
+    - 'frontend/src/metabase/static-viz/'
+    - '**/package.json'
+    - '**/yarn.lock'
     - '.github/workflows/**'
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
 
 jobs:
 
-  be-build:
+  be-tests:
     runs-on: ubuntu-20.04
-    timeout-minutes: 10
+    name: be-tests-java-${{ matrix.java-version }}
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        java-version: [8, 11]
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
@@ -54,7 +63,7 @@ jobs:
         path: |
           ~/.m2
           ~/.gitlibs
-        key: ${{ runner.os }}-m2-jdk8-${{ hashFiles('**/deps.edn') }}
+        key: ${{ runner.os }}-m2-jdk${{ matrix.java-version }}-${{ hashFiles('**/deps.edn') }}
 
     - run: yarn install --frozen-lockfile --prefer-offline
     - name: Build static viz frontend
