@@ -37,7 +37,7 @@ jobs:
         path: |
           ~/.m2
           ~/.gitlibs
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/deps.edn') }}
+        key: ${{ runner.os }}-m2-jdk8-${{ hashFiles('**/deps.edn') }}
     - name: Compile Java source file(s)
       run: clojure -X:deps prep
     - name: Compile driver AOT namespaces
