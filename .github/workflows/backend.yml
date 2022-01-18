@@ -73,10 +73,14 @@ jobs:
     - name: Fetch dependencies (./bin/build/build-drivers)
       working-directory: bin/build-drivers
       run: clojure -P -M:test
+
     - name: Run tests as be-tests-oss
       run: clojure -X:dev:ci:test:oss:oss-dev
     - name: Run tests as be-tests-ee
       run: clojure -X:dev:ci:test:ee:ee-dev
-
-
+    - name: Publish Test Report (JUnit)
+      uses: mikepenz/action-junit-report@v2
+      if: always()
+      with:
+        report_paths: 'target/junit/**/*_test.xml'
 
