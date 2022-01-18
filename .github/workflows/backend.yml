@@ -20,10 +20,12 @@ jobs:
 
   be-tests:
     runs-on: ubuntu-20.04
-    name: be-tests-java-${{ matrix.java-version }}
+    name: be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
     timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
+        edition: [oss]
         java-version: [8, 11]
     steps:
     - uses: actions/checkout@v2
@@ -83,10 +85,8 @@ jobs:
       working-directory: bin/build-drivers
       run: clojure -P -M:test
 
-    - name: Run tests as be-tests-oss
-      run: clojure -X:dev:ci:test:oss:oss-dev
-    - name: Run tests as be-tests-ee
-      run: clojure -X:dev:ci:test:ee:ee-dev
+    - name: Run tests
+      run: clojure -X:dev:ci:test:${{ matrix.edition }}:${{ matrix.edition }}-dev
     - name: Publish Test Report (JUnit)
       uses: mikepenz/action-junit-report@v2
       if: always()
