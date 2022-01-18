@@ -16,7 +16,7 @@ on:
 jobs:
 
   check-migrations:
-    runs-on: ubuntu-2004
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
