@@ -51,6 +51,10 @@ jobs:
     - name: Fetch dependencies (./bin/build/build-drivers)
       working-directory: bin/build-drivers
       run: clojure -P -M:test
+    - name: Run tests as be-tests-oss
+      run: clojure -X:dev:ci:test:oss:oss-dev
+    - name: Run tests as be-tests-ee
+      run: clojure -X:dev:ci:test:ee:ee-dev
 
 
 
