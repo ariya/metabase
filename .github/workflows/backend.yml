@@ -19,7 +19,7 @@ on:
 jobs:
 
   be-tests:
-    runs-on: buildjet-2vcpu-ubuntu-2004
+    runs-on: buildjet-4vcpu-ubuntu-2004
     name: be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
     timeout-minutes: 15
     strategy:
