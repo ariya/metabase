@@ -16,7 +16,7 @@ on:
 jobs:
 
   check-migrations:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
@@ -25,10 +25,6 @@ jobs:
       with:
         java-version: 11
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Check versions
       run: |
         java -version
