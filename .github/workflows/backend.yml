@@ -140,7 +140,7 @@ jobs:
       run: clojure -X:dev:ci:test:${{ matrix.edition }}:${{ matrix.edition }}-dev
     - name: Publish Test Report (JUnit)
       uses: mikepenz/action-junit-report@v2
-      check_name: JUnit Test Report be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
       if: always()
       with:
         report_paths: 'target/junit/**/*_test.xml'
+        check_name: JUnit Test Report be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
