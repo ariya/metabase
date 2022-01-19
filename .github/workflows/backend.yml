@@ -84,7 +84,7 @@ jobs:
       name: Check ns forms
 
   be-tests:
-    runs-on: ubuntu-latest
+    runs-on: buildjet-2vcpu-ubuntu-2004
     name: be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
     timeout-minutes: 15
     strategy:
