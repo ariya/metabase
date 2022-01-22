@@ -130,8 +130,8 @@ jobs:
       maildev:
         image: maildev/maildev
         ports:
-          - "80:80"
-          - "25:25"
+          - "9080:80"
+          - "9025:25"
       postgres-sample:
         image: metabase/qa-databases:postgres-sample-12
         ports:
