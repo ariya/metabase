@@ -1,0 +1,44 @@
+name: Migrations
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+    - '**.clj*'
+    - '**.edn'
+    - '**.yaml'
+    - '.github/workflows/**'
+  pull_request:
+
+jobs:
+
+  check-migrations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: 11
+        distribution: 'temurin'
+    - name: Install Clojure CLI
+      run: |
+        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
+        sudo bash ./linux-install-1.10.3.933.sh
+    - name: Check versions
+      run: |
+        java -version
+        clojure --version
+
+    - name: Get M2 cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2
+          ~/.gitlibs
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/deps.edn') }}
+
+    - name: Verify Liquibase Migrations
+      run: ./bin/lint-migrations-file.sh
