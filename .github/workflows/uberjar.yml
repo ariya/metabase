@@ -125,7 +125,7 @@ jobs:
       fail-fast: false
       matrix:
         edition: [oss]
-        folder: [custom-column]
+        folder: [custom-column, models, moderation, native, native-filters]
     services:
       maildev:
         image: maildev/maildev
