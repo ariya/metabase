@@ -15,7 +15,7 @@ export const setupSMTP = () => {
 
   cy.request("PUT", "/api/email", {
     "email-smtp-host": "localhost",
-    "email-smtp-port": "25",
+    "email-smtp-port": "9025",
     "email-smtp-username": "admin",
     "email-smtp-password": "admin",
     "email-smtp-security": "none",
@@ -31,7 +31,7 @@ export const getInbox = () => {
 };
 
 const getInboxWithRetry = (timeout = INBOX_TIMEOUT) => {
-  return cy.request("GET", `http://localhost:80/email`).then(response => {
+  return cy.request("GET", `http://localhost:9080/email`).then(response => {
     if (response.body.length) {
       return cy.wrap(response);
     } else if (timeout > 0) {

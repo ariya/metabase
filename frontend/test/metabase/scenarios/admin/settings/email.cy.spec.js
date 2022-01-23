@@ -12,7 +12,7 @@ describe("scenarios > admin > settings > email settings", () => {
       .type("localhost")
       .blur();
     cy.findByLabelText("SMTP Port")
-      .type("25")
+      .type("9025")
       .blur();
     cy.findByLabelText("SMTP Username")
       .type("admin")
@@ -29,7 +29,7 @@ describe("scenarios > admin > settings > email settings", () => {
 
     // This part was added as a repro for metabase#17615
     cy.findByDisplayValue("localhost");
-    cy.findByDisplayValue("25");
+    cy.findByDisplayValue("9025");
     cy.findAllByDisplayValue("admin");
     cy.findByDisplayValue("mailer@metabase.test");
   });
