@@ -44,11 +44,11 @@ const getInboxWithRetry = (timeout = INBOX_TIMEOUT) => {
 };
 
 export const clearInbox = () => {
-  return cy.request("DELETE", "http://localhost:80/email/all");
+  return cy.request("DELETE", "http://localhost:9080/email/all");
 };
 
 export const openEmailPage = emailSubject => {
-  cy.window().then(win => (win.location.href = "http://localhost"));
+  cy.window().then(win => (win.location.href = "http://localhost:9080"));
   cy.findByText(emailSubject).click();
 
   return cy.hash().then(path => {
