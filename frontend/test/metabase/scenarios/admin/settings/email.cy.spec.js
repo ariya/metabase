@@ -12,7 +12,7 @@ describe("scenarios > admin > settings > email settings", () => {
       .type("localhost")
       .blur();
     cy.findByLabelText("SMTP Port")
-      .type("25")
+      .type("9025")
       .blur();
     cy.findByLabelText("SMTP Username")
       .type("admin")
@@ -29,7 +29,7 @@ describe("scenarios > admin > settings > email settings", () => {
 
     // This part was added as a repro for metabase#17615
     cy.findByDisplayValue("localhost");
-    cy.findByDisplayValue("25");
+    cy.findByDisplayValue("9025");
     cy.findAllByDisplayValue("admin");
     cy.findByDisplayValue("mailer@metabase.test");
   });
@@ -55,7 +55,7 @@ describe("scenarios > admin > settings > email settings", () => {
     cy.visit("/admin/settings/email");
     cy.findByText("Send test email").click();
     cy.findByText("Sent!");
-    cy.request("GET", "http://localhost:80/email").then(({ body }) => {
+    cy.request("GET", "http://localhost:9080/email").then(({ body }) => {
       const emailBody = body[0].text;
       expect(emailBody).to.include("Your Metabase emails are working");
     });
