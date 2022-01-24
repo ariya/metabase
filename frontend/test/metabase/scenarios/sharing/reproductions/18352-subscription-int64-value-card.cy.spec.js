@@ -45,7 +45,7 @@ describe("issue 18352", () => {
     cy.button("Send email now").click();
     cy.findByText("Email sent");
 
-    cy.request("GET", "http://localhost:80/email").then(
+    cy.request("GET", "http://localhost:9080/email").then(
       ({ body: [{ html }] }) => {
         expect(html).not.to.include(
           "An error occurred while displaying this card.",
