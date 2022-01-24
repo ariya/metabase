@@ -218,7 +218,7 @@ describe("scenarios > dashboard > subscriptions", () => {
       cy.findByText("15705D").click();
       cy.findByText("Send email now").click();
       cy.findByText("Email sent");
-      cy.request("GET", "http://localhost:80/email").then(({ body }) => {
+      cy.request("GET", "http://localhost:9080/email").then(({ body }) => {
         expect(body[0].html).not.to.include(
           "An error occurred while displaying this card.",
         );
@@ -243,7 +243,7 @@ describe("scenarios > dashboard > subscriptions", () => {
       cy.findByText("Send email now").click();
       cy.findByText(/^Sending/);
       cy.findByText("Email sent");
-      cy.request("GET", "http://localhost:80/email").then(({ body }) => {
+      cy.request("GET", "http://localhost:9080/email").then(({ body }) => {
         expect(body[0].html).to.include(TEXT_CARD);
       });
     });

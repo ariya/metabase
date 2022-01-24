@@ -51,7 +51,7 @@ describe("issue 18344", () => {
     cy.button("Send email now").click();
     cy.findByText("Email sent");
 
-    cy.request("GET", "http://localhost:80/email").then(({ body }) => {
+    cy.request("GET", "http://localhost:9080/email").then(({ body }) => {
       expect(body[0].html).to.include("OrdersFoo");
     });
   });
