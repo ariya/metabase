@@ -18,7 +18,7 @@ on:
 
 jobs:
   run-presto-kerberos-test:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 40
     steps:
       - name: Install babashka

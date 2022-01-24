@@ -6,7 +6,7 @@ on:
 
 jobs:
   codenotify:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Codenotify
     steps:
       - uses: actions/checkout@v2

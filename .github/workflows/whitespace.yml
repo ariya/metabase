@@ -18,7 +18,7 @@ on:
 
 jobs:
   whitespace-linter:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 5
     steps:
     - uses: actions/checkout@v2
@@ -27,10 +27,6 @@ jobs:
       with:
         java-version: 11
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Get M2 cache
       uses: actions/cache@v2
       with:
