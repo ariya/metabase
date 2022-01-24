@@ -11,7 +11,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 60
     strategy:
       matrix:
@@ -30,10 +30,6 @@ jobs:
       with:
         java-version: 8
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Check versions
       run: |
         echo "Node.js `node --version`"
@@ -86,7 +82,7 @@ jobs:
           ./SHA256.sum
 
   check:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     name: check ${{ matrix.edition }} (java ${{ matrix.java-version }})
     needs: build
     timeout-minutes: 10
@@ -117,7 +113,7 @@ jobs:
       run: curl -s localhost:3000/api/health
 
   e2e-tests:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 45
     needs: build
     name: e2e-tests-${{ matrix.folder }}-${{ matrix.edition }}
@@ -134,8 +130,8 @@ jobs:
       maildev:
         image: maildev/maildev
         ports:
-          - "80:80"
-          - "25:25"
+          - "9080:80"
+          - "9025:25"
       postgres-sample:
         image: metabase/qa-databases:postgres-sample-12
         ports:
@@ -159,10 +155,6 @@ jobs:
       with:
         java-version: 8
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Check versions
       run: |
         echo "Node.js `node --version`"
