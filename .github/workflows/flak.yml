@@ -81,37 +81,6 @@ jobs:
           ./COMMIT-ID
           ./SHA256.sum
 
-  check:
-    runs-on: self-hosted
-    name: check ${{ matrix.edition }} (java ${{ matrix.java-version }})
-    needs: build
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        edition: [oss]
-        java-version: [8, 11, 17]
-    steps:
-    - name: Prepare JRE (Java Run-time Environment)
-      uses: actions/setup-java@v1
-      with:
-        java-package: jre
-        java-version: ${{ matrix.java-version }}
-    - run: java -version
-
-    - uses: actions/download-artifact@v2
-      name: Retrieve uberjar artifact
-      with:
-        name: metabase-${{ matrix.edition }}-uberjar
-
-    - name: Launch uberjar
-      run: java -jar ./target/uberjar/metabase.jar &
-    - name: Wait for Metabase to start
-      run: while ! curl -s localhost:3000/api/health; do sleep 1; done
-      timeout-minutes: 5
-
-    - name: Check API health
-      run: curl -s localhost:3000/api/health
-
   e2e-tests:
     runs-on: self-hosted
     timeout-minutes: 45
@@ -125,7 +94,7 @@ jobs:
       fail-fast: false
       matrix:
         edition: [oss]
-        folder: [admin, binning, collections, custom-column, dashboard, dashboard-filters, dashboard-filters-sql, downloads, models, moderation, native, native-filters, onboarding, permissions, question, sharing, smoketest, visualizations]
+        folder: [binning]
     services:
       maildev:
         image: maildev/maildev
