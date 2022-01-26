@@ -1,4 +1,4 @@
-name: Uberjar
+name: FLAK
 
 on:
   push:
