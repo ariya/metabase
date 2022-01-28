@@ -56,7 +56,18 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/deps.edn') }}
 
     - run: yarn install --frozen-lockfile --prefer-offline
-    - run: MB_EDITION=${{ matrix.edition }} ./bin/build
+
+    - name: Java/AOT prep
+      run: |
+        source "./bin/prep.sh"
+        prep_deps
+
+    - run: ./bin/build version
+    - run: ./bin/build translations
+    - run: ./bin/build frontend
+    - run: ./bin/build licenses
+    - run: ./bin/build drivers
+    - run: ./bin/build uberjar
 
     - name: Mark with the commit hash
       run:  git rev-parse --short HEAD > COMMIT-ID
