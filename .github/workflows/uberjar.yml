@@ -20,6 +20,7 @@ jobs:
     env:
       MB_EDITION: ${{ matrix.edition }}
       INTERACTIVE: false
+    name: build-uberjar-${{ matrix.edition }}
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js

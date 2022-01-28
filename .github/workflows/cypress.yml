@@ -1,0 +1,43 @@
+name: Cypress
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+
+jobs:
+
+  e2e-tests:
+    runs-on: self-hosted
+    timeout-minutes: 45
+    name: e2e-tests-${{ matrix.folder }}-${{ matrix.edition }}
+    env:
+      MB_EDITION: ${{ matrix.edition }}
+      DISPLAY: ""
+      QA_DB_ENABLED: true
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [oss]
+        folder: [admin]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Wait for Uberjar build
+      uses: fountainhead/action-wait-for-check@v1.0.0
+      with:
+        checkName: build-uberjar-${{ matrix.edition }}
+        timeoutSeconds: 1800
+        intervalSeconds: 60
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download built Uberjar from artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: uberjar.yml
+        name: metabase-${{ matrix.edition }}-uberjar
+        commit: ${{ github.event.pull_request.head.sha || github.sha }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
