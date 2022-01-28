@@ -1,0 +1,25 @@
+name: Test cache
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+
+jobs:
+
+  test-cache:
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [oss]
+        folder: [admin, binning, collections, custom-column, dashboard, dashboard-filters, dashboard-filters-sql, downloads, models, moderation, native, native-filters, onboarding, permissions, question, sharing, smoketest, visualizations]
+    steps:
+    - name: Grab built Uberjar from cache
+      uses: actions/cache@v2
+      with:
+        key:  cache-v1-uberjar-oss--90602effa7fe4a3cf92d12d65b2b22f769dbdccf
+        path: ./target/uberjar/metabase.jar
