@@ -68,8 +68,12 @@ jobs:
       name: Check types
 
   fe-tests-unit:
+<<<<<<< HEAD
     if: github.event.pull_request.draft == false
     runs-on: buildjet-2vcpu-ubuntu-2004
+=======
+    runs-on: ubuntu-20.04
+>>>>>>> ae5df7b37b (CI with GitHub Actions: revert back to hosted runner on GitHub)
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@v3
