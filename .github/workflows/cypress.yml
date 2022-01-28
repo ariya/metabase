@@ -42,6 +42,8 @@ jobs:
         ports:
           - 3306:3306
     steps:
+    - uses: actions/checkout@v2
+
     - name: Wait for Uberjar build
       uses: fountainhead/action-wait-for-check@v1.0.0
       with:
@@ -49,12 +51,14 @@ jobs:
         timeoutSeconds: 1800
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         token: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v2
-    - name: Grab built Uberjar from cache
-      uses: actions/cache@v2
+    - name: Download built Uberjar from artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
-        key:  cache-v1-uberjar-${{ matrix.edition }}--${{ github.event.pull_request.head.sha || github.sha }}
-        path: ./target/uberjar/metabase.jar
+        workflow: uberjar.yml
+        name: metabase-${{ matrix.edition }}-uberjar
+        commit: ${{ github.event.pull_request.head.sha || github.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Prepare Node.js
       uses: actions/setup-node@v1
       with:
