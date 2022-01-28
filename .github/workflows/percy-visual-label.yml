@@ -6,6 +6,7 @@ on:
     types: [synchronize, labeled]
 
 jobs:
+
   percy:
     if: contains(github.event.pull_request.labels.*.name, 'visual')
     timeout-minutes: 30
