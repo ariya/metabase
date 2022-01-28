@@ -57,7 +57,7 @@ jobs:
         workflow: uberjar.yml
         name: metabase-${{ matrix.edition }}-uberjar
         commit: ${{ github.event.pull_request.head.sha || github.sha }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Prepare Node.js
       uses: actions/setup-node@v1
