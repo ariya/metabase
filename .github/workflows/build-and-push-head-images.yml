@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-push-oss-image:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
         run: docker buildx build . -t metabase/metabase-head:latest --push --compress --no-cache
 
   build-and-push-ee-image:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2

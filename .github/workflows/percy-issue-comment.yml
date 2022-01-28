@@ -8,7 +8,7 @@ on:
 jobs:
   pr_info:
     if: github.event.comment.body == '@metabase-bot run visual tests'
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     outputs:
       pull_request_number: ${{ fromJson(steps.fetch_pr.outputs.data).head.number }}
       branch_name: ${{ fromJson(steps.fetch_pr.outputs.data).head.ref }}
@@ -30,7 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     needs: pr_info
     timeout-minutes: 60
     strategy:
@@ -54,10 +54,6 @@ jobs:
         with:
           java-version: 8
           distribution: "temurin"
-      - name: Install Clojure CLI
-        run: |
-          curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-          sudo bash ./linux-install-1.10.3.933.sh
       - name: Check versions
         run: |
           echo "Node.js `node --version`"
@@ -94,7 +90,7 @@ jobs:
   percy:
     timeout-minutes: 30
     needs: [build, pr_info]
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -114,10 +110,6 @@ jobs:
         with:
           java-version: 8
           distribution: "temurin"
-      - name: Install Clojure CLI
-        run: |
-          curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-          sudo bash ./linux-install-1.10.3.933.sh
       - name: Check versions
         run: |
           echo "Node.js `node --version`"

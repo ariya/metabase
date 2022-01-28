@@ -15,7 +15,7 @@ on:
 jobs:
 
   be-linter-clj-kondo:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
       run: docker run -v $PWD:/work --rm cljkondo/clj-kondo clj-kondo --config /work/lint-config.edn --lint /work/src /work/enterprise/backend/src /work/backend/mbql/src /work/shared/src
 
   be-linter-eastwood:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@v2
@@ -32,10 +32,6 @@ jobs:
       with:
         java-version: 11
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Get M2 cache
       uses: actions/cache@v2
       with:
@@ -50,7 +46,7 @@ jobs:
       name: Run Eastwood linter
 
   be-linter-namespace-decls:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
@@ -59,10 +55,6 @@ jobs:
       with:
         java-version: 11
         distribution: 'temurin'
-    - name: Install Clojure CLI
-      run: |
-        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
-        sudo bash ./linux-install-1.10.3.933.sh
     - name: Get M2 cache
       uses: actions/cache@v2
       with:

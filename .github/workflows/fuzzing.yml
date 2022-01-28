@@ -19,7 +19,7 @@ on:
 jobs:
 
   fe-fuzz-tokenizer:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
       name: Run fuzz testing on the tokenizer
 
   fe-fuzz-recursive-parser:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@v2
