@@ -44,12 +44,12 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/yarn
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-uberjar-yarn-${{ hashFiles('**/yarn.lock') }}
     - name: Get node_modules cache
       uses: actions/cache@v2
       with:
         path: node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-uberjar-node-modules-${{ hashFiles('**/yarn.lock') }}
     - name: Get M2 cache
       uses: actions/cache@v2
       with:
