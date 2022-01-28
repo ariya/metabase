@@ -23,6 +23,24 @@ jobs:
       matrix:
         edition: [oss]
         folder: [admin]
+    services:
+      maildev:
+        image: maildev/maildev
+        ports:
+          - "9080:80"
+          - "9025:25"
+      postgres-sample:
+        image: metabase/qa-databases:postgres-sample-12
+        ports:
+          - "5432:5432"
+      mongo-sample:
+        image: metabase/qa-databases:mongo-sample-4.0
+        ports:
+          - 27017:27017
+      mysql-sample:
+        image: metabase/qa-databases:mysql-sample-8
+        ports:
+          - 3306:3306
     steps:
     - uses: actions/checkout@v2
 
@@ -37,7 +55,54 @@ jobs:
     - name: Download built Uberjar from artifact
       uses: dawidd6/action-download-artifact@v2
       with:
-        workflow: uberjar.yml
+        workflow: Uberjar
         name: metabase-${{ matrix.edition }}-uberjar
         commit: ${{ github.event.pull_request.head.sha || github.sha }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Prepare Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Prepare JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: 8
+        distribution: 'temurin'
+    - name: Check versions
+      run: |
+        echo "Node.js `node --version`"
+        echo "yarn `yarn --version`"
+        java -version
+    - name: Get yarn cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Get node_modules cache
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Ensure that Cypress is ready
+      run: |
+        yarn cypress install
+        yarn cypress cache path
+        yarn cypress cache list
+        yarn cypress verify
+    - name: Get M2 cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.edn') }}
+
+    - name: Get the version info
+      run: |
+        jar xf target/uberjar/metabase.jar version.properties
+        mv version.properties resources/
+
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - run: yarn run test-cypress-no-build --folder ${{ matrix.folder }}
+      name: Run Cypress tests on ${{ matrix.folder }}
+      env:
+        TERM: xterm
