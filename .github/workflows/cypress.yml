@@ -93,22 +93,22 @@ jobs:
       matrix:
         edition: [oss]
         folder:
-          - "admin",
-          - "binning",
-          - "collections",
-          - "custom-column",
-          - "dashboard",
-          - "dashboard-filters",
-          - "dashboard-filters-sql",
-          - "downloads",
-          - "joins",
-          - "models",
-          - "moderation",
-          - "native",
-          - "native-filters",
-          - "onboarding",
-          - "permissions",
-          - "question",
+          - "admin"
+          - "binning"
+          - "collections"
+          - "custom-column"
+          - "dashboard"
+          - "dashboard-filters"
+          - "dashboard-filters-sql"
+          - "downloads"
+          - "joins"
+          - "models"
+          - "moderation"
+          - "native"
+          - "native-filters"
+          - "onboarding"
+          - "permissions"
+          - "question"
           - "sharing"
           - "smoketest"
           - "visualizations"
