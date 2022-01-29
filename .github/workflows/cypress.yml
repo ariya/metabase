@@ -92,7 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         edition: [oss]
-        folder: [admin, binning, collections, custom-column, dashboard, dashboard-filters, dashboard-filters-sql, downloads, models, moderation, native, native-filters, onboarding, permissions, question, sharing, smoketest, visualizations]
+        folder: [admin]
     services:
       maildev:
         image: maildev/maildev
