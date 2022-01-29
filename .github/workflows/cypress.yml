@@ -114,46 +114,44 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: 14.x
+        cache: 'yarn'
     - name: Prepare JDK 8
       uses: actions/setup-java@v2
       with:
         java-version: 8
         distribution: 'temurin'
+    - name: Install Clojure CLI
+      run: |
+        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
+        sudo bash ./linux-install-1.10.3.933.sh
     - name: Check versions
       run: |
         echo "Node.js `node --version`"
         echo "yarn `yarn --version`"
         java -version
-    - name: Get yarn cache
+        clojure --version
+
+    - name: Get M2 cache
       uses: actions/cache@v2
       with:
-        path: ~/.cache/yarn
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.edn') }}
+
     - name: Get node_modules cache
       uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
-
-    - name: Get Cypress cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/Cypress
-        key: ${{ runner.os }}-Cypress-${{ hashFiles('**/yarn.lock') }}
+    - run: yarn install --frozen-lockfile --prefer-offline
     - name: Ensure that Cypress is ready
       run: |
         yarn cypress install
         yarn cypress cache path
         yarn cypress cache list
         yarn cypress verify
-    - name: Get M2 cache
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/project.clj') }}-${{ hashFiles('**/deps.edn') }}
 
     - uses: actions/download-artifact@v2
       name: Retrieve uberjar artifact for ${{ matrix.edition }}
@@ -164,7 +162,6 @@ jobs:
         jar xf target/uberjar/metabase.jar version.properties
         mv version.properties resources/
 
-    - run: yarn install --frozen-lockfile --prefer-offline
     - run: yarn run test-cypress-no-build --folder ${{ matrix.folder }}
       name: Run Cypress tests on ${{ matrix.folder }}
       env:
