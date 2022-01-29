@@ -137,6 +137,12 @@ jobs:
       with:
         path: node_modules
         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Get Cypress cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/Cypress
+        key: ${{ runner.os }}-Cypress-${{ hashFiles('**/yarn.lock') }}
     - name: Ensure that Cypress is ready
       run: |
         yarn cypress install
