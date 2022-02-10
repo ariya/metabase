@@ -63,19 +63,26 @@ jobs:
       matrix:
         edition: [oss, ee]
         folder:
+          - "admin"
+          - "auditing"
+          - "binning"
+          - "collections"
           - "custom-column"
           - "dashboard"
           - "dashboard-filters"
           - "dashboard-filters-sql"
           - "downloads"
+          - "joins"
+          - "models"
           - "moderation"
           - "native"
           - "native-filters"
-          - "native"
+          - "onboarding"
           - "permissions"
           - "question"
           - "sharing"
           - "smoketest"
+          - "visualizations"
     services:
       maildev:
         image: maildev/maildev
