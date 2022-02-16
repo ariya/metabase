@@ -1121,8 +1121,12 @@ export class ExpressionDimension extends Dimension {
     query?: StructuredQuery | null | undefined,
   ): Dimension | null | undefined {
     if (Array.isArray(mbql) && mbql[0] === "expression") {
-      return new ExpressionDimension(null, mbql.slice(1), metadata, query);
+      return new ExpressionDimension(mbql.slice(1), metadata, query);
     }
+  }
+
+  constructor(args, metadata, query) {
+    super(null, args, metadata, query);
   }
 
   mbql(): ExpressionReference {
