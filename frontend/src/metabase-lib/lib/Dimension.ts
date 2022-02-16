@@ -1113,16 +1113,30 @@ const isFieldDimension = dimension => dimension instanceof FieldDimension;
  * Expression reference, `["expression", expression-name]`
  */
 export class ExpressionDimension extends Dimension {
-  tag = "Custom";
-
   static parseMBQL(
     mbql: any,
     metadata?: Metadata | null | undefined,
     query?: StructuredQuery | null | undefined,
   ): Dimension | null | undefined {
     if (Array.isArray(mbql) && mbql[0] === "expression") {
-      return new ExpressionDimension(null, mbql.slice(1), metadata, query);
+      return new ExpressionDimension(mbql.slice(1), metadata, query);
     }
+  }
+
+  constructor(
+    args,
+    metadata = null,
+    query = null,
+    additionalProperties = null,
+  ) {
+    super(null, args, metadata, query);
+    if (additionalProperties) {
+      Object.keys(additionalProperties).forEach(k => {
+        this[k] = additionalProperties[k];
+      });
+    }
+
+    Object.freeze(this);
   }
 
   mbql(): ExpressionReference {
@@ -1183,6 +1197,16 @@ export class ExpressionDimension extends Dimension {
       }
     }
 
+    const dimension_options = [
+      t`Auto bin`,
+      t`10 bins`,
+      t`50 bins`,
+      t`100 bins`,
+      t`Don't bin`,
+    ].map(name => {
+      return { name, mbql: this.mbql(), type: base_type };
+    });
+
     return new Field({
       id: this.mbql(),
       name: this.name(),
@@ -1191,6 +1215,7 @@ export class ExpressionDimension extends Dimension {
       base_type,
       query,
       table,
+      dimension_options,
     });
   }
 
@@ -1206,6 +1231,33 @@ export class ExpressionDimension extends Dimension {
     }
 
     return "int";
+  }
+
+  _dimensionForOption(option: DimensionOption): ExpressionDimension {
+    const dimension = option.mbql
+      ? ExpressionDimension.parseMBQL(option.mbql)
+      : this;
+
+    const additionalProperties = {};
+    if (option.name) {
+      additionalProperties._subDisplayName = option.name;
+      additionalProperties._subTriggerDisplayName = option.name;
+    }
+
+    return new ExpressionDimension(
+      dimension._args,
+      dimension._metadata,
+      dimension._query,
+      additionalProperties,
+    );
+  }
+
+  subDisplayName(): string {
+    return this._subDisplayName ? this._subDisplayName : "Default";
+  }
+
+  subTriggerDisplayName(): string {
+    return this._subTriggerDisplayName ? this.subTriggerDisplayName : "";
   }
 }
 // These types aren't aggregated. e.g. if you take the distinct count of a FK
