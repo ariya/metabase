@@ -40,3 +40,77 @@ jobs:
         m2-cache-key: 'namespace-decls'
     - run: clojure -X:dev:ee:ee-dev:drivers:drivers-dev:test:namespace-checker
       name: Check ns forms
+
+  be-tests:
+    runs-on: buildjet-2vcpu-ubuntu-2004
+    name: be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [oss, ee]
+        java-version: [8, 11, 17]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Prepare JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+    - name: Install Clojure CLI
+      run: |
+        curl -O https://download.clojure.org/install/linux-install-1.10.3.933.sh &&
+        sudo bash ./linux-install-1.10.3.933.sh
+    - name: Check versions
+      run: |
+        java -version
+        clojure --version
+
+    - name: Get yarn cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Get node_modules cache
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Get M2 cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.m2
+          ~/.gitlibs
+        key: ${{ runner.os }}-m2-jdk${{ matrix.java-version }}-${{ hashFiles('**/deps.edn') }}
+
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
+
+    - name: Compile Java source file(s)
+      run: clojure -X:deps prep
+    - name: Compile driver AOT namespaces
+      working-directory: modules/drivers
+      run: clojure -X:deps prep
+    - name: Fetch dependencies
+      run: clojure -P -X:dev:ci:ee:ee-dev:drivers:drivers-dev
+    - name: Fetch dependencies  (./bin/build/build-mb)
+      working-directory: bin/build-mb
+      run: clojure -P -M:test
+    - name: Fetch dependencies (./bin/build/build-drivers)
+      working-directory: bin/build-drivers
+      run: clojure -P -M:test
+
+    - name: Run tests
+      run: clojure -X:dev:ci:test:${{ matrix.edition }}:${{ matrix.edition }}-dev
+    - name: Publish Test Report (JUnit)
+      uses: mikepenz/action-junit-report@v2
+      if: always()
+      with:
+        report_paths: 'target/junit/**/*_test.xml'
+        check_name: JUnit Test Report be-tests-java-${{ matrix.java-version }}-${{ matrix.edition }}
