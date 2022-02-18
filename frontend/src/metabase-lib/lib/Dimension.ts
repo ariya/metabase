@@ -149,10 +149,12 @@ export default class Dimension {
       const mappedDimOptions = dimensionOptions.map(option =>
         this._dimensionForOption(option),
       );
-      console.log("Dimension.dimensions()", {
-        dimensionOptions,
-        mappedDimOptions,
-      });
+      if (dimensionOptions.length > 0) {
+        console.log("Dimension.dimensions()", {
+          dimensionOptions,
+          mappedDimOptions,
+        });
+      }
       return mappedDimOptions;
     } else {
       return [].concat(
@@ -207,6 +209,8 @@ export default class Dimension {
     }
 
     const dimension = this.parseMBQL(mbql);
+
+    console.log("_dimensionForOption", option, dimension);
 
     if (dimension && option.name) {
       dimension._subDisplayName = option.name;
@@ -1120,7 +1124,7 @@ const isFieldDimension = dimension => dimension instanceof FieldDimension;
  * Expression reference, `["expression", expression-name]`
  */
 export class ExpressionDimension extends Dimension {
-  tag = "CustomXXX";
+  //tag = "CustomXXX";
 
   static parseMBQL(
     mbql: any,
@@ -1132,10 +1136,20 @@ export class ExpressionDimension extends Dimension {
     }
   }
 
-  constructor(args, metadata, query) {
+  constructor(
+    args,
+    metadata = null,
+    query = null,
+    additionalProperties = null,
+  ) {
     super(null, args, metadata, query);
-    const field = this.field();
-    console.log("ExpressionDimension", { field });
+    if (additionalProperties) {
+      Object.keys(additionalProperties).forEach(k => {
+        this[k] = additionalProperties[k];
+      });
+    }
+
+    Object.freeze(this);
   }
 
   mbql(): ExpressionReference {
@@ -1196,6 +1210,16 @@ export class ExpressionDimension extends Dimension {
       }
     }
 
+    const dimension_options = [
+      t`Auto bin`,
+      t`10 bins`,
+      t`50 bins`,
+      t`100 bins`,
+      t`Don't bin`,
+    ].map(name => {
+      return { name, mbql: this.mbql(), type: base_type };
+    });
+
     return new Field({
       id: this.mbql(),
       name: this.name(),
@@ -1204,6 +1228,7 @@ export class ExpressionDimension extends Dimension {
       base_type,
       query,
       table,
+      dimension_options,
     });
   }
 
@@ -1219,6 +1244,38 @@ export class ExpressionDimension extends Dimension {
     }
 
     return "int";
+  }
+
+  _dimensionForOption(option: DimensionOption): ExpressionDimension {
+    console.log("ExpressionDimension._dimensionForOption", option);
+    const dimension = option.mbql
+      ? ExpressionDimension.parseMBQL(option.mbql)
+      : this;
+
+    const additionalProperties = {};
+    if (option.name) {
+      additionalProperties._subDisplayName = option.name;
+      additionalProperties._subTriggerDisplayName = option.name;
+    }
+
+    const RESULT = new ExpressionDimension(
+      dimension._args,
+      dimension._metadata,
+      dimension._query,
+      additionalProperties,
+    );
+
+    console.log("ExpressionDimension._dimensionForOption", option, RESULT);
+
+    return RESULT;
+  }
+
+  subDisplayName(): string {
+    return this._subDisplayName ? this._subDisplayName : "Default";
+  }
+
+  subTriggerDisplayName(): string {
+    return this._subTriggerDisplayName ? this.subTriggerDisplayName : "";
   }
 }
 // These types aren't aggregated. e.g. if you take the distinct count of a FK
