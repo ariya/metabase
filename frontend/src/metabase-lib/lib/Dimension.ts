@@ -146,7 +146,14 @@ export default class Dimension {
     const dimensionOptions = this.field().dimension_options;
 
     if (!DimensionTypes && dimensionOptions) {
-      return dimensionOptions.map(option => this._dimensionForOption(option));
+      const mappedDimOptions = dimensionOptions.map(option =>
+        this._dimensionForOption(option),
+      );
+      console.log("Dimension.dimensions()", {
+        dimensionOptions,
+        mappedDimOptions,
+      });
+      return mappedDimOptions;
     } else {
       return [].concat(
         ...(DimensionTypes || []).map(DimensionType =>
@@ -1113,7 +1120,7 @@ const isFieldDimension = dimension => dimension instanceof FieldDimension;
  * Expression reference, `["expression", expression-name]`
  */
 export class ExpressionDimension extends Dimension {
-  tag = "Custom";
+  tag = "CustomXXX";
 
   static parseMBQL(
     mbql: any,
@@ -1127,6 +1134,8 @@ export class ExpressionDimension extends Dimension {
 
   constructor(args, metadata, query) {
     super(null, args, metadata, query);
+    const field = this.field();
+    console.log("ExpressionDimension", { field });
   }
 
   mbql(): ExpressionReference {

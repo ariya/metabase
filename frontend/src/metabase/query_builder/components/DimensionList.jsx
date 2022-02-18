@@ -87,6 +87,13 @@ export default class DimensionList extends Component {
 
     const multiSelect = !!(onAddDimension || onRemoveDimension);
 
+    if (item.dimension.tag) {
+      console.log("BOOM", item.dimension);
+    }
+    if (subDimensions) {
+      console.log("DUar", subDimensions);
+    }
+
     const sectionDimension = dimension
       ? dimension
       : _.find(
