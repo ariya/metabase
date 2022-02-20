@@ -79,6 +79,23 @@ export default class Dimension {
   }
 
   /**
+   * Canonically the field clause should use `null` instead of empty options. Keys with null values should get removed.
+   */
+  static normalizeOptions(options: any): any {
+    if (!options) {
+      return null;
+    }
+
+    // recursively normalize maps inside options.
+    options = _.mapObject(options, val =>
+      typeof val === "object" ? this.normalizeOptions(val) : val,
+    );
+    // remove null/undefined options from map.
+    options = _.omit(options, value => value == null);
+    return _.isEmpty(options) ? null : options;
+  }
+
+  /**
    * Parses an MBQL expression into an appropriate Dimension subclass, if possible.
    * Metadata should be provided if you intend to use the display name or render methods.
    */
@@ -529,23 +546,6 @@ export class FieldDimension extends Dimension {
     return dimension;
   }
 
-  /**
-   * Canonically the field clause should use `null` instead of empty options. Keys with null values should get removed.
-   */
-  static normalizeOptions(options: any): any {
-    if (!options) {
-      return null;
-    }
-
-    // recursively normalize maps inside options.
-    options = _.mapObject(options, val =>
-      typeof val === "object" ? this.normalizeOptions(val) : val,
-    );
-    // remove null/undefined options from map.
-    options = _.omit(options, value => value == null);
-    return _.isEmpty(options) ? null : options;
-  }
-
   constructor(
     fieldIdOrName,
     options = null,
@@ -558,7 +558,7 @@ export class FieldDimension extends Dimension {
       [fieldIdOrName, options],
       metadata,
       query,
-      Object.freeze(FieldDimension.normalizeOptions(options)),
+      Object.freeze(Dimension.normalizeOptions(options)),
     );
     this._fieldIdOrName = fieldIdOrName;
 
