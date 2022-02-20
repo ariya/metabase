@@ -1287,7 +1287,12 @@ export default class StructuredQuery extends AtomicQuery {
   expressionDimensions(): Dimension[] {
     return Object.entries(this.expressions()).map(
       ([expressionName, expression]) => {
-        return new ExpressionDimension([expressionName], this._metadata, this);
+        return new ExpressionDimension(
+          expressionName,
+          null,
+          this._metadata,
+          this,
+        );
       },
     );
   }

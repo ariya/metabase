@@ -212,9 +212,11 @@ describe("metabase/util/dataset", () => {
             keyForColumn({
               name: "foo",
               expression_name: "foo",
-              field_ref: fieldRefEnabled ? ["expression", "foo"] : undefined,
+              field_ref: fieldRefEnabled
+                ? ["expression", "foo", null]
+                : undefined,
             }),
-          ).toEqual(JSON.stringify(["ref", ["expression", "foo"]]));
+          ).toEqual(JSON.stringify(["ref", ["expression", "foo", null]]));
         });
         it("should return [name ...] for aggregation", () => {
           const col = {

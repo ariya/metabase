@@ -449,6 +449,28 @@ export default class Dimension {
     return this.getBinningOption("strategy");
   }
 
+  /**
+   * Short string that describes the binning options used. Used for both subTriggerDisplayName() and render()
+   */
+  describeBinning(): string {
+    if (!this.binningOptions()) {
+      return "";
+    }
+
+    if (this.binningStrategy() === "num-bins") {
+      const n = this.getBinningOption("num-bins");
+      return ngettext(msgid`${n} bin`, `${n} bins`, n);
+    }
+
+    if (this.binningStrategy() === "bin-width") {
+      const binWidth = this.getBinningOption("bin-width");
+      const units = this.field().isCoordinate() ? "°" : "";
+      return `${binWidth}${units}`;
+    } else {
+      return t`Auto binned`;
+    }
+  }
+
   /*
    * The temporal unit that is being used to bucket this Field, if any.
    */
@@ -842,28 +864,6 @@ export class FieldDimension extends Dimension {
   }
 
   /**
-   * Short string that describes the binning options used. Used for both subTriggerDisplayName() and render()
-   */
-  describeBinning(): string {
-    if (!this.binningOptions()) {
-      return "";
-    }
-
-    if (this.binningStrategy() === "num-bins") {
-      const n = this.getBinningOption("num-bins");
-      return ngettext(msgid`${n} bin`, `${n} bins`, n);
-    }
-
-    if (this.binningStrategy() === "bin-width") {
-      const binWidth = this.getBinningOption("bin-width");
-      const units = this.field().isCoordinate() ? "°" : "";
-      return `${binWidth}${units}`;
-    } else {
-      return t`Auto binned`;
-    }
-  }
-
-  /**
    * Whether this is a numeric Field that can be binned
    */
   isBinnable(): boolean {
@@ -1121,23 +1121,36 @@ const isFieldDimension = dimension => dimension instanceof FieldDimension;
  * Expression reference, `["expression", expression-name]`
  */
 export class ExpressionDimension extends Dimension {
+  _expressionName: ExpressionName;
+
   static parseMBQL(
     mbql: any,
     metadata?: Metadata | null | undefined,
     query?: StructuredQuery | null | undefined,
   ): Dimension | null | undefined {
     if (Array.isArray(mbql) && mbql[0] === "expression") {
-      return new ExpressionDimension(mbql.slice(1), metadata, query);
+      const expressionName = mbql[1];
+      const options = mbql[2];
+      return new ExpressionDimension(expressionName, options, metadata, query);
     }
   }
 
   constructor(
-    args,
+    expressionName,
+    options = null,
     metadata = null,
     query = null,
     additionalProperties = null,
   ) {
-    super(null, args, metadata, query);
+    super(
+      null,
+      [expressionName, options],
+      metadata,
+      query,
+      Object.freeze(Dimension.normalizeOptions(options)),
+    );
+    this._expressionName = expressionName;
+
     if (additionalProperties) {
       Object.keys(additionalProperties).forEach(k => {
         this[k] = additionalProperties[k];
@@ -1148,19 +1161,19 @@ export class ExpressionDimension extends Dimension {
   }
 
   mbql(): ExpressionReference {
-    return ["expression", this._args[0]];
+    return ["expression", this._expressionName, this._options];
   }
 
-  name() {
-    return this._args[0];
+  name(): string {
+    return this._expressionName;
   }
 
   displayName(): string {
-    return this._args[0];
+    return this._expressionName;
   }
 
-  columnName() {
-    return this._args[0];
+  columnName(): string {
+    return this._expressionName;
   }
 
   field() {
@@ -1183,7 +1196,7 @@ export class ExpressionDimension extends Dimension {
 
       type = infer(expressions[this.name()], env);
     } else {
-      type = infer(this._args[0]);
+      type = infer(this._expressionName);
     }
 
     let base_type = type;
@@ -1253,7 +1266,8 @@ export class ExpressionDimension extends Dimension {
     }
 
     return new ExpressionDimension(
-      dimension._args,
+      dimension._expressionName,
+      dimension._options,
       dimension._metadata,
       dimension._query,
       additionalProperties,
