@@ -56,6 +56,7 @@ export default class Dimension {
   _args: any;
   _metadata: Metadata | null | undefined;
   _query: Query | null | undefined;
+  _options: any;
   // Display names provided by the backend
   _subDisplayName: string | null | undefined;
   _subTriggerDisplayName: string | null | undefined;
@@ -68,11 +69,13 @@ export default class Dimension {
     args: any[],
     metadata?: Metadata,
     query?: StructuredQuery | null | undefined,
+    options: any,
   ) {
     this._parent = parent;
     this._args = args;
     this._metadata = metadata || (parent && parent._metadata);
     this._query = query || (parent && parent._query);
+    this._options = options;
   }
 
   /**
@@ -410,6 +413,48 @@ export default class Dimension {
   }
 
   /**
+   * Get an option from the field options map, if there is one.
+   */
+  getOption(k: string): any {
+    return this._options && this._options[k];
+  }
+
+  // binning-strategy stuff
+  binningOptions() {
+    return this.getOption("binning");
+  }
+
+  getBinningOption(option) {
+    return this.binningOptions() && this.binningOptions()[option];
+  }
+
+  binningStrategy() {
+    return this.getBinningOption("strategy");
+  }
+
+  /*
+   * The temporal unit that is being used to bucket this Field, if any.
+   */
+  temporalUnit() {
+    return this.getOption("temporal-unit");
+  }
+
+  /**
+   * Whether temporal bucketing is being applied, *and* the bucketing is a truncation operation such as "month" or
+   * "quarter";
+   */
+  isTemporalExtraction(): boolean {
+    return this.temporalUnit() && /-of-/.test(this.temporalUnit());
+  }
+
+  /**
+   * Whether temporal bucketing is being applied, *and* the bucketing is an truncation operation such as "day of month";
+   */
+  isTemporalTruncation(): boolean {
+    return this.temporalUnit() && !this.isTemporalExtraction();
+  }
+
+  /**
    * Renders a dimension to a string for display in query builders
    */
   render() {
@@ -508,9 +553,14 @@ export class FieldDimension extends Dimension {
     query = null,
     additionalProperties = null,
   ) {
-    super(null, [fieldIdOrName, options], metadata, query);
+    super(
+      null,
+      [fieldIdOrName, options],
+      metadata,
+      query,
+      Object.freeze(FieldDimension.normalizeOptions(options)),
+    );
     this._fieldIdOrName = fieldIdOrName;
-    this._options = Object.freeze(FieldDimension.normalizeOptions(options));
 
     if (additionalProperties) {
       Object.keys(additionalProperties).forEach(k => {
@@ -544,13 +594,6 @@ export class FieldDimension extends Dimension {
 
   mbql(): LocalFieldReference {
     return ["field", this._fieldIdOrName, this._options];
-  }
-
-  /**
-   * Get an option from the field options map, if there is one.
-   */
-  getOption(k: string): any {
-    return this._options && this._options[k];
   }
 
   /**
@@ -1031,28 +1074,6 @@ export class FieldDimension extends Dimension {
     );
   }
 
-  /*
-   * The temporal unit that is being used to bucket this Field, if any.
-   */
-  temporalUnit() {
-    return this.getOption("temporal-unit");
-  }
-
-  /**
-   * Whether temporal bucketing is being applied, *and* the bucketing is a truncation operation such as "month" or
-   * "quarter";
-   */
-  isTemporalExtraction(): boolean {
-    return this.temporalUnit() && /-of-/.test(this.temporalUnit());
-  }
-
-  /**
-   * Whether temporal bucketing is being applied, *and* the bucketing is an truncation operation such as "day of month";
-   */
-  isTemporalTruncation(): boolean {
-    return this.temporalUnit() && !this.isTemporalExtraction();
-  }
-
   sourceField() {
     return this.getOption("source-field");
   }
@@ -1087,23 +1108,10 @@ export class FieldDimension extends Dimension {
       : null;
   }
 
-  // binning-strategy stuff
-  binningOptions() {
-    return this.getOption("binning");
-  }
-
   withBinningOptions(newBinningOptions) {
     return this.withOptions({
       binning: newBinningOptions,
     });
-  }
-
-  getBinningOption(option) {
-    return this.binningOptions() && this.binningOptions()[option];
-  }
-
-  binningStrategy() {
-    return this.getBinningOption("strategy");
   }
 }
 
