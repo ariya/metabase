@@ -1241,17 +1241,7 @@ export class ExpressionDimension extends Dimension {
   }
 
   icon(): IconName {
-    const { base_type } = this.field();
-
-    switch (base_type) {
-      case "type/Text":
-        return "string";
-
-      default:
-        break;
-    }
-
-    return "int";
+    return this.field().icon();
   }
 
   _dimensionForOption(option: DimensionOption): ExpressionDimension {
