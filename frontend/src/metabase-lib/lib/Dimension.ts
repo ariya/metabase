@@ -269,13 +269,6 @@ export default class Dimension {
     );
   }
 
-  /**
-   * The base dimension of this dimension, typically a field. May return itself.
-   */
-  baseDimension(): Dimension {
-    return this;
-  }
-
   foreign(dimension: Dimension): FieldDimension {
     return null;
   }
@@ -436,6 +429,28 @@ export default class Dimension {
     return this._options && this._options[k];
   }
 
+  /*
+   * The temporal unit that is being used to bucket this Field, if any.
+   */
+  temporalUnit() {
+    return this.getOption("temporal-unit");
+  }
+
+  /**
+   * Whether temporal bucketing is being applied, *and* the bucketing is a truncation operation such as "month" or
+   * "quarter";
+   */
+  isTemporalExtraction(): boolean {
+    return this.temporalUnit() && /-of-/.test(this.temporalUnit());
+  }
+
+  /**
+   * Whether temporal bucketing is being applied, *and* the bucketing is an truncation operation such as "day of month";
+   */
+  isTemporalTruncation(): boolean {
+    return this.temporalUnit() && !this.isTemporalExtraction();
+  }
+
   // binning-strategy stuff
   binningOptions() {
     return this.getOption("binning");
@@ -471,26 +486,68 @@ export default class Dimension {
     }
   }
 
-  /*
-   * The temporal unit that is being used to bucket this Field, if any.
+  /**
+   * Return the join alias associated with this field, if any.
    */
-  temporalUnit() {
-    return this.getOption("temporal-unit");
+  joinAlias() {
+    return this.getOption("join-alias");
+  }
+
+  sourceField() {
+    return this.getOption("source-field");
   }
 
   /**
-   * Whether temporal bucketing is being applied, *and* the bucketing is a truncation operation such as "month" or
-   * "quarter";
+   * Return a copy of this Dimension that includes the specified `options`.
+   * @abstract
    */
-  isTemporalExtraction(): boolean {
-    return this.temporalUnit() && /-of-/.test(this.temporalUnit());
+  withOptions(options: any): Dimension {
+    return this;
   }
 
   /**
-   * Whether temporal bucketing is being applied, *and* the bucketing is an truncation operation such as "day of month";
+   * Return a copy of this Dimension with option `key` set to `value`.
    */
-  isTemporalTruncation(): boolean {
-    return this.temporalUnit() && !this.isTemporalExtraction();
+  withOption(key: string, value: any): Dimension {
+    return this.withOptions({
+      [key]: value,
+    });
+  }
+
+  /**
+   * Return a copy of this Dimension, bucketed by the specified temporal unit.
+   */
+  withTemporalUnit(unit: string): Dimension {
+    return this.withOptions({
+      "temporal-unit": unit,
+    });
+  }
+
+  /**
+   * Return a copy of this Dimension, with its binning options replaced by the new ones.
+   */
+  withBinningOptions(newBinningOptions) {
+    return this.withOptions({
+      binning: newBinningOptions,
+    });
+  }
+
+  /**
+   * Return a copy of this Dimension with join alias set to `newAlias`.
+   */
+  withJoinAlias(newAlias) {
+    return this.withOptions({
+      "join-alias": newAlias,
+    });
+  }
+
+  /**
+   * Return a copy of this Dimension with a replacement source field.
+   */
+  withSourceField(sourceField) {
+    return this.withOptions({
+      "source-field": sourceField,
+    });
   }
 
   /**
@@ -502,7 +559,7 @@ export default class Dimension {
   }
 
   /**
-   * Return a copy of this Dimension with any temporal bucketing options removed.
+   * Return a copy of this Dimension with any temporal unit options removed.
    */
   withoutTemporalBucketing(): Dimension {
     return this.withoutOptions("temporal-unit");
@@ -513,6 +570,13 @@ export default class Dimension {
    */
   withoutBinning(): Dimension {
     return this.withoutOptions("binning");
+  }
+
+  /**
+   * Return a copy of this Dimension with any temporal bucketing or binning options removed.
+   */
+  baseDimension(): Dimension {
+    return this.withoutTemporalBucketing().withoutBinning();
   }
 
   /**
@@ -789,13 +853,6 @@ export class FieldDimension extends Dimension {
   }
 
   /**
-   * Return a copy of this FieldDimension with any temporal bucketing or binning options removed.
-   */
-  baseDimension(): FieldDimension {
-    return this.withoutTemporalBucketing().withoutBinning();
-  }
-
-  /**
    * Return a copy of this FieldDimension that includes the specified `options`.
    */
   withOptions(options: any): FieldDimension {
@@ -810,24 +867,6 @@ export class FieldDimension extends Dimension {
       this._metadata,
       this._query,
     );
-  }
-
-  /**
-   * Return a copy of this FieldDimension with option `key` set to `value`.
-   */
-  withOption(key: string, value: any): FieldDimension {
-    return this.withOptions({
-      [key]: value,
-    });
-  }
-
-  /**
-   * Return a copy of this FieldDimension, bucketed by the specified temporal unit.
-   */
-  withTemporalUnit(unit: string): FieldDimension {
-    return this.withOptions({
-      "temporal-unit": unit,
-    });
   }
 
   // no idea what this does or if it's even used anywhere.
@@ -1082,44 +1121,12 @@ export class FieldDimension extends Dimension {
     );
   }
 
-  sourceField() {
-    return this.getOption("source-field");
-  }
-
-  withSourceField(sourceField) {
-    return this.withOptions({
-      "source-field": sourceField,
-    });
-  }
-
-  /**
-   * Return the join alias associated with this field, if any.
-   */
-  joinAlias() {
-    return this.getOption("join-alias");
-  }
-
-  /**
-   * Return a copy of this field with join alias set to `newAlias`.
-   */
-  withJoinAlias(newAlias) {
-    return this.withOptions({
-      "join-alias": newAlias,
-    });
-  }
-
   join() {
     return this.joinAlias()
       ? _.findWhere(this._query && this._query.joins(), {
           alias: this.joinAlias(),
         })
       : null;
-  }
-
-  withBinningOptions(newBinningOptions) {
-    return this.withOptions({
-      binning: newBinningOptions,
-    });
   }
 }
 
