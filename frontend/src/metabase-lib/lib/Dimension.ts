@@ -388,25 +388,6 @@ export default class Dimension {
   }
 
   /**
-   * The name to be shown when this dimension is being displayed as a sub-dimension of another.
-   *
-   * Example: a temporal bucketing option such as 'by Day' or 'by Month'.
-   * @abstract
-   */
-  subDisplayName(): string {
-    return this._subDisplayName || "";
-  }
-
-  /**
-   * A shorter version of subDisplayName, e.x. to be shown in the dimension picker trigger (e.g. the list of temporal
-   * bucketing options like 'Day' or 'Month')
-   * @abstract
-   */
-  subTriggerDisplayName(): string {
-    return this._subTriggerDisplayName || "";
-  }
-
-  /**
    * An icon name representing this dimension's type, to be used in the <Icon> component.
    * @abstract
    */
@@ -577,6 +558,72 @@ export default class Dimension {
    */
   baseDimension(): Dimension {
     return this.withoutTemporalBucketing().withoutBinning();
+  }
+
+  /**
+   * The name to be shown when this dimension is being displayed as a sub-dimension of another.
+   *
+   * Example: a temporal bucketing option such as 'by Day' or 'by Month'.
+   */
+  subDisplayName(): string {
+    if (this._subDisplayName) {
+      return this._subDisplayName;
+    }
+
+    if (this.temporalUnit()) {
+      return formatBucketing(this.temporalUnit());
+    }
+
+    if (this.binningStrategy()) {
+      return this.describeBinning();
+    }
+
+    // honestly, I have no idea why we do something totally random if we have a FK source field compared to everything
+    // else, but that's how the tests are written
+    if (this.sourceField()) {
+      return this.displayName();
+    }
+
+    return "Default";
+  }
+
+  /**
+   * A shorter version of subDisplayName, e.x. to be shown in the dimension picker trigger (e.g. the list of temporal
+   * bucketing options like 'Day' or 'Month')
+   */
+  subTriggerDisplayName(): string {
+    if (this._subTriggerDisplayName) {
+      return this._subTriggerDisplayName;
+    }
+
+    // binned field
+    if (this.binningOptions()) {
+      return this.describeBinning();
+    }
+
+    // temporal bucketed field
+    if (this.temporalUnit()) {
+      return t`by ${formatBucketing(this.temporalUnit()).toLowerCase()}`;
+    }
+
+    // if the field is a binnable number, we should return 'Unbinned' here
+    if (this.isBinnable()) {
+      return t`Unbinned`;
+    }
+
+    return "";
+  }
+
+  /**
+   * Whether this is a numeric Field that can be binned
+   */
+  isBinnable(): boolean {
+    const defaultDimension = this.defaultDimension();
+    return (
+      defaultDimension &&
+      isFieldDimension(defaultDimension) &&
+      defaultDimension.binningOptions()
+    );
   }
 
   /**
@@ -884,40 +931,8 @@ export class FieldDimension extends Dimension {
     return this.field().displayName(...args);
   }
 
-  subDisplayName(): string {
-    if (this._subDisplayName) {
-      return this._subDisplayName;
-    }
-
-    if (this.temporalUnit()) {
-      return formatBucketing(this.temporalUnit());
-    }
-
-    if (this.binningStrategy()) {
-      return this.describeBinning();
-    }
-
-    // honestly, I have no idea why we do something totally random if we have a FK source field compared to everything
-    // else, but that's how the tests are written
-    if (this.sourceField()) {
-      return this.displayName();
-    }
-
-    return "Default";
-  }
-
   icon() {
     return this.field().icon();
-  }
-
-  /**
-   * Whether this is a numeric Field that can be binned
-   */
-  isBinnable(): boolean {
-    const defaultDimension = this.defaultDimension();
-    return (
-      isFieldDimension(defaultDimension) && defaultDimension.binningOptions()
-    );
   }
 
   dimensions(DimensionTypes?: typeof Dimension[]): FieldDimension[] {
@@ -1037,29 +1052,6 @@ export class FieldDimension extends Dimension {
       this._query,
       additionalProperties,
     );
-  }
-
-  subTriggerDisplayName(): string {
-    if (this._subTriggerDisplayName) {
-      return this._subTriggerDisplayName;
-    }
-
-    // binned field
-    if (this.binningOptions()) {
-      return this.describeBinning();
-    }
-
-    // temporal bucketed field
-    if (this.temporalUnit()) {
-      return t`by ${formatBucketing(this.temporalUnit()).toLowerCase()}`;
-    }
-
-    // if the field is a binnable number, we should return 'Unbinned' here
-    if (this.isBinnable()) {
-      return "Unbinned";
-    }
-
-    return "";
   }
 
   render(): string {
