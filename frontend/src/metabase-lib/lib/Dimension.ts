@@ -1270,14 +1270,6 @@ export class ExpressionDimension extends Dimension {
       additionalProperties,
     );
   }
-
-  subDisplayName(): string {
-    return this._subDisplayName ? this._subDisplayName : "Default";
-  }
-
-  subTriggerDisplayName(): string {
-    return this._subTriggerDisplayName ? this.subTriggerDisplayName : "";
-  }
 }
 // These types aren't aggregated. e.g. if you take the distinct count of a FK
 // column, you now have a normal integer and should see relevant filters for
