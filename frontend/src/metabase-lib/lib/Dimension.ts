@@ -494,6 +494,28 @@ export default class Dimension {
   }
 
   /**
+   * Return a copy of this Dimension that excludes `options`.
+   * @abstract
+   */
+  withoutOptions(...options: string[]): Dimension {
+    return this;
+  }
+
+  /**
+   * Return a copy of this Dimension with any temporal bucketing options removed.
+   */
+  withoutTemporalBucketing(): Dimension {
+    return this.withoutOptions("temporal-unit");
+  }
+
+  /**
+   * Return a copy of this Dimension with any binning options removed.
+   */
+  withoutBinning(): Dimension {
+    return this.withoutOptions("binning");
+  }
+
+  /**
    * Renders a dimension to a string for display in query builders
    */
   render() {
@@ -764,20 +786,6 @@ export class FieldDimension extends Dimension {
       this._metadata,
       this._query,
     );
-  }
-
-  /**
-   * Return a copy of this FieldDimension with any temporal bucketing options removed.
-   */
-  withoutTemporalBucketing(): FieldDimension {
-    return this.withoutOptions("temporal-unit");
-  }
-
-  /**
-   * Return a copy of this FieldDimension with any binning options removed.
-   */
-  withoutBinning(): FieldDimension {
-    return this.withoutOptions("binning");
   }
 
   /**
