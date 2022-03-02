@@ -1374,19 +1374,23 @@ const UNAGGREGATED_SEMANTIC_TYPES = new Set([TYPE.FK, TYPE.PK]);
 export class AggregationDimension extends Dimension {
   _aggregationIndex: number;
 
+  /**
+   * Whether `clause` is an array, and a valid `:aggregation` clause
+   */
+   static isAggregationClause(clause): boolean {
+    return (
+      Array.isArray(clause) && clause.length >= 2 && clause[0] === "aggregation"
+    );
+  }
+
   static parseMBQL(
     mbql: any,
     metadata?: Metadata | null | undefined,
     query?: StructuredQuery | null | undefined,
   ): Dimension | null | undefined {
-    if (Array.isArray(mbql) && mbql[0] === "aggregation") {
+    if (AggregationDimension.isAggregationClause(mbql)) {
       const [aggregationIndex, options] = mbql.slice(1);
-      return new AggregationDimension(
-        aggregationIndex,
-        options,
-        metadata,
-        query,
-      );
+      return new AggregationDimension(aggregationIndex, options, metadata, query);
     }
   }
 
@@ -1418,6 +1422,27 @@ export class AggregationDimension extends Dimension {
   aggregationIndex(): number {
     return this._aggregationIndex;
   }
+
+  isEqual(somethingElse) {
+    if (isAggregationDimension(somethingElse)) {
+      return (
+        somethingElse._aggregationIndex === this._aggregationIndex &&
+        _.isEqual(somethingElse._options, this._options)
+      );
+    }
+
+    if (AggregationDimension.isAggregationClause(somethingElse)) {
+      const dimension = AggregationDimension.parseMBQL(
+        somethingElse,
+        this._metadata,
+        this._query,
+      );
+      return dimension ? this.isEqual(dimension) : false;
+    }
+
+    return false;
+  }
+
 
   column(extra = {}) {
     return { ...super.column(), source: "aggregation", ...extra };
