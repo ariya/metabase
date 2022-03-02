@@ -551,6 +551,8 @@ export default class AccordionList extends Component {
 
     const rows = this.getRows();
 
+    console.log("AccordionList.render", rows);
+
     const scrollToIndex =
       cursor != null ? rows.findIndex(this.isRowSelected) : undefined;
 

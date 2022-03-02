@@ -1377,7 +1377,7 @@ export class AggregationDimension extends Dimension {
   /**
    * Whether `clause` is an array, and a valid `:aggregation` clause
    */
-   static isAggregationClause(clause): boolean {
+  static isAggregationClause(clause): boolean {
     return (
       Array.isArray(clause) && clause.length >= 2 && clause[0] === "aggregation"
     );
@@ -1390,7 +1390,12 @@ export class AggregationDimension extends Dimension {
   ): Dimension | null | undefined {
     if (AggregationDimension.isAggregationClause(mbql)) {
       const [aggregationIndex, options] = mbql.slice(1);
-      return new AggregationDimension(aggregationIndex, options, metadata, query);
+      return new AggregationDimension(
+        aggregationIndex,
+        options,
+        metadata,
+        query,
+      );
     }
   }
 
@@ -1401,6 +1406,7 @@ export class AggregationDimension extends Dimension {
     query = null,
     additionalProperties = null,
   ) {
+    console.log("new AggregationDimension", { aggregationIndex, options });
     super(
       null,
       [aggregationIndex, options],
@@ -1442,7 +1448,6 @@ export class AggregationDimension extends Dimension {
 
     return false;
   }
-
 
   column(extra = {}) {
     return { ...super.column(), source: "aggregation", ...extra };
@@ -1519,6 +1524,9 @@ export class AggregationDimension extends Dimension {
     return "int";
   }
 }
+
+const isAggregationDimension = dimension =>
+  dimension instanceof AggregationDimension;
 export class TemplateTagDimension extends FieldDimension {
   constructor(tagName, metadata, query) {
     super(null, null, metadata, query, {

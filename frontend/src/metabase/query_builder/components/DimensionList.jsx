@@ -74,6 +74,8 @@ export default class DimensionList extends Component {
       onRemoveDimension,
     } = this.props;
 
+    console.log("renderItemExtra", { item });
+
     const surpressSubDimensions =
       preventNumberSubDimensions && item.dimension.field().isSummable();
 
@@ -227,6 +229,7 @@ export default class DimensionList extends Component {
   };
 
   render() {
+    console.log("DimensionList.render", this.state.sections);
     return (
       <AccordionList
         {...this.props}
