@@ -276,6 +276,7 @@ describe("smoketest > admin_setup", () => {
     });
 
     it("should rename a question and description as admin", () => {
+      cy.intercept("POST", "/api/card/*/query").as("cardQuery");
       cy.visit("/");
 
       cy.findByText("Browse all items").click();
@@ -284,8 +285,9 @@ describe("smoketest > admin_setup", () => {
       cy.findByText("A look at your").should("not.exist");
 
       cy.findByText("Orders, Count, Grouped by Created At (year)").click();
+      cy.wait("@cardQuery");
 
-      cy.findByText("Settings");
+      cy.findByTextEnsureVisible("Settings");
 
       cy.findByTestId("saved-question-header-button").click();
       cy.findByTestId("edit-details-button").click();
@@ -322,25 +324,22 @@ describe("smoketest > admin_setup", () => {
     });
 
     it("should change a column name, visibility, and formatting as admin", () => {
+      cy.intercept("GET", "/api/database/*/idfields").as("idfields");
       cy.visit("/admin/datamodel/database/1/table/2");
 
-      // Changing column name from Discount to Sale
+      cy.wait("@idfields");
+      cy.findByTextEnsureVisible("Test Table");
 
-      cy.wait(1000)
-        .get("[value='Discount amount.'")
-        .parent()
-        .parent()
-        .within(() => {
-          cy.get("input")
-            .first()
-            .wait(1)
-            .clear()
-            .wait(1)
-            .type("Sale");
-        });
+      // Changing column name from Discount to Sale
+      cy.findByTextEnsureVisible("Discount").scrollIntoView();
+      cy.get("input[value='Discount']")
+        .clear()
+        .should("have.value", "")
+        .type("Sale", { delay: 100 })
+        .blur();
+      cy.get("input[value='Sale']");
 
       // Changing visibility of Created At column
-
       cy.wait(2000)
         .get("[value='The date and time an order was submitted.']")
         .parent()
@@ -376,12 +375,12 @@ describe("smoketest > admin_setup", () => {
         .click();
       cy.findByText("In every table cell").click();
 
-      cy.findByText("Saved");
+      cy.findByTextEnsureVisible("Saved");
     });
 
     it("should reflect changes to column name, visibility, and formatting in the notebook editor for admin", () => {
       // Navigate
-      cy.findByText("Exit admin").click({ force: true });
+      cy.findByTextEnsureVisible("Exit admin").click({ force: true });
 
       // Checking table name
 
@@ -427,6 +426,7 @@ describe("smoketest > admin_setup", () => {
     });
 
     it("should configure a foreign key to show the name as admin", () => {
+      cy.intercept("POST", "/api/dataset").as("dataset");
       cy.visit("/admin/datamodel/database/1/table/2");
 
       // Configure Key
@@ -452,6 +452,8 @@ describe("smoketest > admin_setup", () => {
 
       cy.visit("/browse/1");
       cy.findByText("Test Table").click();
+
+      cy.wait("@dataset");
 
       cy.findByTextEnsureVisible("Product ID");
       cy.findAllByText("Awesome Concrete Shoes");
@@ -521,6 +523,7 @@ describe("smoketest > admin_setup", () => {
     });
 
     it("should see changes to visibility, formatting, and foreign key mapping as user", () => {
+      cy.intercept("POST", "/api/card/*/query").as("cardQuery");
       cy.signOut();
       cy.signInAsNormalUser();
       cy.visit("/");
@@ -541,6 +544,9 @@ describe("smoketest > admin_setup", () => {
       );
 
       cy.findByText("Test Question").click();
+      cy.wait("@cardQuery");
+      cy.findByTextEnsureVisible("Visualization");
+
       cy.findByTestId("saved-question-header-button").click();
       cy.findByTestId("edit-details-button").click();
 
