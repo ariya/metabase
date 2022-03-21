@@ -29,6 +29,11 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     restore();
     cy.signInAsAdmin();
 
+    cy.intercept("GET", "/api/field/**").as("field");
+    cy.intercept("POST", "/api/card/**/query").as("cardQuery");
+    cy.intercept("GET", "/api/public/card/**").as("publicCard");
+    cy.intercept("GET", "/api/dashboard/**").as("dashboard");
+
     cy.request("POST", `/api/field/${ORDERS.USER_ID}/dimension`, {
       type: "external",
       name: "User ID",
@@ -158,8 +163,10 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     sharedParametersTests(() => {
       visitQuestion(questionId);
       // wait for question to load/run
+      cy.findByTextEnsureVisible("Visualization");
       cy.contains("Test Question");
       cy.contains("2,500");
+      return { url: `/question/${questionId}`, wait: "@cardQuery" };
     });
   });
 
@@ -173,10 +180,13 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     });
 
     sharedParametersTests(() => {
-      cy.visit(`/public/question/${uuid}`);
+      const url = `/public/question/${uuid}`;
+      const wait = "@publicCard";
+      cy.visit(url);
       // wait for question to load/run
-      cy.contains("Test Question");
+      cy.findByTextEnsureVisible("Test Question");
       cy.contains("2,500");
+      return { url, wait };
     });
   });
 
@@ -195,10 +205,13 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     });
 
     sharedParametersTests(() => {
-      cy.visit(`/embed/question/${QUESTION_JWT_TOKEN}`);
+      const url = `/embed/question/${QUESTION_JWT_TOKEN}`;
+      const wait = "@field";
+      cy.visit(url);
       // wait for question to load/run
-      cy.contains("Test Question");
+      cy.findByTextEnsureVisible("Test Question");
       cy.contains("2,500");
+      return { url, wait };
     });
   });
 
@@ -206,10 +219,13 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     beforeEach(cy.signInAsAdmin);
 
     sharedParametersTests(() => {
+      const url = `/dashboard/${dashboardId}`;
+      const wait = "@dashboard";
       visitDashboard(dashboardId);
       // wait for question to load/run
-      cy.contains("Test Dashboard");
+      cy.findByTextEnsureVisible("Test Dashboard");
       cy.contains("2,500");
+      return { url, wait };
     });
   });
 
@@ -223,10 +239,12 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     });
 
     sharedParametersTests(() => {
-      cy.visit(`/public/dashboard/${uuid}`);
+      const url = `/public/dashboard/${uuid}`;
+      cy.visit(url);
       // wait for question to load/run
-      cy.contains("Test Dashboard");
+      cy.findByTextEnsureVisible("Test Dashboard");
       cy.contains("2,500");
+      return { url };
     });
   });
 
@@ -245,10 +263,12 @@ describe("scenarios > dashboard > parameters-embedded", () => {
     });
 
     sharedParametersTests(() => {
-      cy.visit(`/embed/dashboard/${DASHBOARD_JWT_TOKEN}`);
+      const url = `/embed/dashboard/${DASHBOARD_JWT_TOKEN}`;
+      cy.visit(url);
       // wait for question to load/run
       cy.contains("Test Dashboard");
       cy.contains("2,500");
+      return { url };
     });
   });
 });
@@ -288,8 +308,11 @@ function sharedParametersTests(visitUrl) {
   });
 
   it("should accept url parameters", () => {
-    visitUrl();
-    cy.url().then(url => cy.visit(url + "?id=1&id=3"));
+    const { url, wait } = visitUrl();
+    cy.visit(url + "?id=1&id=3");
+    wait && cy.wait(wait);
+
+    cy.get(".ScalarValue").should("be.visible");
     cy.contains(".ScalarValue", "2");
   });
 }
