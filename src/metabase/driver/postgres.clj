@@ -42,7 +42,7 @@
 (defmethod driver/display-name :postgres [_] "PostgreSQL")
 
 (defn- ->timestamp [honeysql-form]
-  (hx/cast-unless-type-in "timestamp" #{"timestamp" "timestamptz" "date"} honeysql-form))
+  (hx/cast-unless-type-in "timestamp" #{"timestamp" "timestamptz" "date" "time"} honeysql-form))
 
 (defmethod sql.qp/add-interval-honeysql-form :postgres
   [driver hsql-form amount unit]
