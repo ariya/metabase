@@ -84,6 +84,19 @@
     ;; only supported for Postgres for right now. Not supported for child drivers like Redshift or whatever.
     (= driver :postgres)))
 
+(defn- ->timestamp [honeysql-form]
+  (hx/cast-unless-type-in "timestamp" #{"timestamp" "timestamptz" "date" "time"} honeysql-form))
+
+(defmethod sql.qp/add-interval-honeysql-form :postgres
+  [driver hsql-form amount unit]
+  ;; Postgres doesn't support quarter in intervals (#20683)
+  (if (= unit :quarter)
+    (recur driver hsql-form (* 3 amount) :month)
+    (let [hsql-form (->timestamp hsql-form)]
+      (-> (hx/+ hsql-form (let [s (format "(INTERVAL '%s %s')" amount (name unit))]
+                            (hx/raw s)))
+          (hx/with-type-info (hx/type-info hsql-form))))))
+
 (defmethod driver/humanize-connection-error-message :postgres
   [_ message]
   (condp re-matches message
