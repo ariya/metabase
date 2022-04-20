@@ -89,7 +89,8 @@ export default class FilterWidget extends Component<Props, State> {
   };
 
   renderFilter() {
-    const { query } = this.props;
+    const { query, filter, removeFilter } = this.props;
+    console.log("FilterWidget#renderFilter", { query, filter });
     return (
       <FilterComponent
         metadata={query && query.metadata && query.metadata()}
@@ -137,14 +138,6 @@ export default class FilterWidget extends Component<Props, State> {
           {this.renderFilter()}
           {this.renderPopover()}
         </div>
-        {removeFilter && (
-          <a
-            className="text-light no-decoration px1 flex align-center"
-            onClick={() => removeFilter(index)}
-          >
-            <Icon name="close" size={14} />
-          </a>
-        )}
       </div>
     );
   }
