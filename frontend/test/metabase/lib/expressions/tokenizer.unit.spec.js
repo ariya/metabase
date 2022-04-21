@@ -15,7 +15,7 @@ describe("metabase/lib/expressions/tokenizer", () => {
     expect(ops(")")).toEqual([OP.CloseParenthesis]);
     expect(ops(",")).toEqual([OP.Comma]);
     expect(ops("+ -")).toEqual([OP.Plus, OP.Minus]);
-    expect(ops("/ *")).toEqual([OP.Slash, OP.Star]);
+    expect(ops("/ * %")).toEqual([OP.Slash, OP.Star, OP.Percent]);
     expect(ops("= !=")).toEqual([OP.Equal, OP.NotEqual]);
     expect(ops("< >")).toEqual([OP.LessThan, OP.GreaterThan]);
     expect(ops("<=")).toEqual([OP.LessThanEqual]);

@@ -406,7 +406,7 @@ export const EXPRESSION_FUNCTIONS = new Set([
   "coalesce",
 ]);
 
-export const EXPRESSION_OPERATORS = new Set(["+", "-", "*", "/"]);
+export const EXPRESSION_OPERATORS = new Set(["+", "-", "*", "/", "%"]);
 export const FILTER_OPERATORS = new Set(["!=", "<=", ">=", "<", ">", "="]);
 
 export const BOOLEAN_UNARY_OPERATORS = new Set(["not"]);

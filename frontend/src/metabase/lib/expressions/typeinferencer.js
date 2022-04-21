@@ -18,6 +18,7 @@ export function infer(mbql, env) {
     case OP.Minus:
     case OP.Star:
     case OP.Slash:
+    case OP.Percent:
       return MONOTYPE.Number;
 
     case OP.Not:

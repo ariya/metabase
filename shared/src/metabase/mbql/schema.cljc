@@ -447,7 +447,7 @@
 
 (def arithmetic-expressions
   "Set of valid arithmetic expression clause keywords."
-  #{:+ :- :/ :* :coalesce :length :round :ceil :floor :abs :power :sqrt :log :exp :case})
+  #{:+ :- :/ :* :% :coalesce :length :round :ceil :floor :abs :power :sqrt :log :exp :case})
 
 (def boolean-expressions
   "Set of valid boolean expression clause keywords."

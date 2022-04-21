@@ -106,6 +106,7 @@ export function lexify(expression: string) {
             break;
           case OPERATOR.Star:
           case OPERATOR.Slash:
+          case OPERATOR.Percent:
             type = MULDIV_OP;
             break;
           case OPERATOR.Equal:

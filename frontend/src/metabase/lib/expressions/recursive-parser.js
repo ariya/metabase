@@ -121,10 +121,11 @@ function recursiveParse(source) {
 
   // Multiplicative ::= Unary |
   //                    Multiplicative "*"" Unary |
-  //                    Multiplicative "/" Unary
+  //                    Multiplicative "/" Unary |
+  //                    Multiplicative "%" Unary |
   const parseMultiplicative = () => {
     let expr = parseUnary();
-    while (matchOps([OP.Star, OP.Slash])) {
+    while (matchOps([OP.Star, OP.Slash, OP.Percent])) {
       const { op } = next();
       if (Array.isArray(expr) && expr[0] === op) {
         expr.push(parseUnary());

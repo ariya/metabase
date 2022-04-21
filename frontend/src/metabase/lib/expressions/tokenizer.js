@@ -16,6 +16,7 @@ export const OPERATOR = {
   Minus: "-",
   Star: "*",
   Slash: "/",
+  Percent: "%",
   Equal: "=",
   NotEqual: "!=",
   LessThan: "<",
@@ -89,6 +90,7 @@ export function tokenize(expression) {
       case OPERATOR.Minus:
       case OPERATOR.Star:
       case OPERATOR.Slash:
+      case OPERATOR.Percent:
       case OPERATOR.Equal:
         ++index;
         break;

@@ -426,7 +426,7 @@
     ;; `col-info-for-ag-clause`, and this info is added into the results)
     (_ :guard mbql.preds/Field?)
     (select-keys (col-info-for-field-clause inner-query &match) [:base_type :semantic_type :settings])
-    #{:expression :+ :- :/ :*}
+    #{:expression :+ :- :/ :* :%}
     (merge
      (infer-expression-type &match)
      (when (mbql.preds/Aggregation? &match)

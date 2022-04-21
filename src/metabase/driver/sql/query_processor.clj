@@ -521,7 +521,7 @@
     :distinct
     (->honeysql driver (hx/identifier :field-alias :count))
 
-    #{:+ :- :* :/}
+    #{:+ :- :* :/ :%}
     (->honeysql driver &match)
 
     ;; for everything else just use the name of the aggregation as an identifer, e.g. `:sum`

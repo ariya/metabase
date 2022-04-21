@@ -35,7 +35,7 @@
                              #_:clj-kondo/ignore
                              (recur ag)
 
-                             [(operator :guard #{:+ :- :/ :*}) & args]
+                             [(operator :guard #{:+ :- :/ :* :%}) & args]
                              (interpose (name operator) (map field-name args))
 
                              [:metric (arg :guard integer?)]

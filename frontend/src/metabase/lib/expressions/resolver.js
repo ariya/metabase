@@ -6,7 +6,7 @@ import { getMBQLName, MBQL_CLAUSES } from "metabase/lib/expressions";
 
 export const FIELD_MARKERS = ["dimension", "segment", "metric"];
 export const LOGICAL_OPS = [OP.Not, OP.And, OP.Or];
-export const NUMBER_OPS = [OP.Plus, OP.Minus, OP.Star, OP.Slash];
+export const NUMBER_OPS = [OP.Plus, OP.Minus, OP.Star, OP.Slash, OP.Percent];
 export const COMPARISON_OPS = [
   OP.Equal,
   OP.NotEqual,

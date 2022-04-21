@@ -327,6 +327,7 @@
 (defmethod ->lvalue :- [[_ & args]] (->lvalue (first args)))
 (defmethod ->lvalue :* [[_ & args]] (->lvalue (first args)))
 (defmethod ->lvalue :/ [[_ & args]] (->lvalue (first args)))
+(defmethod ->lvalue :% [[_ & args]] (->lvalue (first args)))
 
 (defmethod ->lvalue :coalesce [[_ & args]] (->lvalue (first args)))
 
