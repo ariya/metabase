@@ -34,7 +34,7 @@ export function countMatchingParentheses(tokens) {
   return tokens.reduce(count, 0);
 }
 
-export function diagnose(source, startRule, query) {
+export function diagnose(name, source, startRule, query) {
   if (!source || source.length === 0) {
     return null;
   }
@@ -113,8 +113,10 @@ function prattCompiler(source, startRule, query) {
       }
       return Array.isArray(segment.id) ? segment.id : ["segment", segment.id];
     } else {
+      const reference = options.name; // avoid circular reference
+
       // fallback
-      const dimension = parseDimension(name, options);
+      const dimension = parseDimension(name, { reference, ...options });
       if (!dimension) {
         throw new ResolverError(t`Unknown Field: ${name}`, node);
       }
