@@ -10,6 +10,7 @@ const propTypes = {
   type: PropTypes.string,
   placeholder: PropTypes.string,
   field: PropTypes.object,
+  path: PropTypes.bool,
   readOnly: PropTypes.bool,
   autoFocus: PropTypes.bool,
   helperText: PropTypes.node,
@@ -20,6 +21,7 @@ const FormInputWidget = forwardRef(function FormInputWidget(
   {
     type = "text",
     placeholder,
+    path,
     field,
     readOnly,
     autoFocus,
@@ -28,10 +30,11 @@ const FormInputWidget = forwardRef(function FormInputWidget(
   },
   ref,
 ) {
+  console.log("FormInputWidget", { field, placeholder, path });
   return (
     <Input
       {...formDomOnlyProps(field)}
-      type={type}
+      type={path ? "file" : type}
       placeholder={placeholder}
       aria-labelledby={`${field.name}-label`}
       readOnly={readOnly}

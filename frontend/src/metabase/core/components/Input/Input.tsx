@@ -56,6 +56,10 @@ const Input = forwardRef(function Input(
         hasError={error}
         fullWidth={fullWidth}
         hasRightIcon={Boolean(rightIcon)}
+        onChange={e => {
+          console.log("InputField path onChange", e.target.files[0]);
+        }}
+        value={""}
       />
       {leftIcon && (
         <Tooltip tooltip={leftIconTooltip} placement="left" offset={[0, 24]}>

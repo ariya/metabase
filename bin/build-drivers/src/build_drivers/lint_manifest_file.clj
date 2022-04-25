@@ -32,11 +32,12 @@
 (s/def ::parent (s/or :single-parent string? :multiple-parent (s/coll-of string?)))
 
 (s/def ::required boolean?)
+(s/def ::path boolean?)
 (s/def ::placeholder any?)
 (s/def ::type #(contains? property-types %))
 (s/def ::visible-if (s/map-of keyword? any?))
 
-(s/def ::connection-property-map (spell/keys :opt-un [::display-name ::default ::required ::placeholder ::type
+(s/def ::connection-property-map (spell/keys :opt-un [::display-name ::default ::required ::path ::placeholder ::type
                                                       ::visible-if]))
 
 (s/def ::raw-property-name-ref string?)

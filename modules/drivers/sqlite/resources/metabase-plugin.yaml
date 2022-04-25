@@ -12,6 +12,7 @@ driver:
       display-name: Filename
       placeholder: /home/camsaul/toucan_sightings.sqlite
       required: true
+      path: true
     - cloud-ip-address-info
     - advanced-options-start
     - default-advanced-options

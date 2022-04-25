@@ -8,6 +8,7 @@ export default class FormInput extends Component {
   static propTypes = {};
 
   render() {
+    console.log("FormInput", this.props);
     const { field, className, placeholder } = this.props;
     return (
       <input
