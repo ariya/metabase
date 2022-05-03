@@ -13,6 +13,12 @@ const COMPARISON_OPS = [
 ];
 
 function recursiveParse(source) {
+  const tree = _recursiveParse(source);
+  // console.log('recursiveParse', source, '=', JSON.stringify(tree));
+  return tree;
+}
+
+function _recursiveParse(source) {
   const { tokens } = tokenize(source);
 
   // Get the next token and remove it from the token list
@@ -110,8 +116,9 @@ function recursiveParse(source) {
   // Unary ::= Primary |
   //           "+" Unary |
   //           "-" Unary
+  //           "NOT" Unary
   const parseUnary = () => {
-    if (matchOps([OP.Plus, OP.Minus])) {
+    if (matchOps([OP.Plus, OP.Minus, OP.Not])) {
       const { op } = next();
       const expr = parseUnary();
       return op === OP.Minus && typeof expr === "number" ? -expr : [op, expr];

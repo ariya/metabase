@@ -35,6 +35,12 @@ export function countMatchingParentheses(tokens) {
 }
 
 export function diagnose(source, startRule, query, name = null) {
+  const result = _diagnose(source, startRule, query, name);
+  // console.log('diagnose', { source, startRule, query }, '=', JSON.stringify(result));
+  return result;
+}
+
+export function _diagnose(source, startRule, query, name = null) {
   if (!source || source.length === 0) {
     return null;
   }

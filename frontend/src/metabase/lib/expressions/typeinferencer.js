@@ -29,6 +29,7 @@ export function infer(mbql, env) {
     case OP.GreaterThanEqual:
     case OP.LessThan:
     case OP.LessThanEqual:
+      console.log("infer", { op }, "BOOL");
       return MONOTYPE.Boolean;
   }
 

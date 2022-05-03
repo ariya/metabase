@@ -38,11 +38,19 @@ function findMBQL(op) {
   return clause;
 }
 
-const isCompatible = (a, b) => {
+function isCompatible(a, b) {
+  const compat = _isCompatible(a, b);
+
+  // if (!compat) console.log("INCOMPAT", { a, b });
+
+  return compat;
+}
+
+const _isCompatible = (a, b) => {
   if (a === b) {
     return true;
   }
-  if (a === "expression" && (b === "number" || b === "string")) {
+  if (a === "expression" && ["number", "string", "boolean"].includes(b)) {
     return true;
   }
   if (a === "aggregation" && b === "number") {
@@ -85,6 +93,7 @@ export function resolve(expression, type = "expression", fn = undefined) {
     } else if (op === "true" || op === "false") {
       operandType = "expression";
     } else if (COMPARISON_OPS.includes(op)) {
+      console.log("COMPARE", op, JSON.stringify(operands));
       operandType = "expression";
       const [firstOperand] = operands;
       if (typeof firstOperand === "number" && !Array.isArray(firstOperand)) {
@@ -122,10 +131,12 @@ export function resolve(expression, type = "expression", fn = undefined) {
     }
 
     if (operandType) {
-      return [
+      const RESULT = [
         op,
         ...operands.map(operand => resolve(operand, operandType, fn)),
       ];
+      // console.log('---', { operandType, RESULT });
+      return RESULT;
     }
 
     const clause = findMBQL(op);
@@ -166,12 +177,7 @@ export function resolve(expression, type = "expression", fn = undefined) {
       return resolve(operand, args[i], fn);
     });
     return [op, ...resolvedOperands];
-  } else if (
-    !isCompatible(
-      type,
-      typeof expression === "boolean" ? "expression" : typeof expression,
-    )
-  ) {
+  } else if (!isCompatible(type, typeof expression)) {
     throw new Error(
       t`Expecting ${type} but found ${JSON.stringify(expression)}`,
     );
