@@ -17,10 +17,13 @@ export type ParameterTarget =
   | ParameterDimensionTarget;
 
 export type ParameterMapping = {
-  card_id: CardId;
+  card_id?: CardId;
   parameter_id: ParameterId;
   target: ParameterTarget;
+  required?: boolean;
 };
+
+export type ParameterMappings = ParameterMapping[];
 
 export type ParameterMappingOptions = {
   name: string;

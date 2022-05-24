@@ -1,5 +1,5 @@
 import _ from "underscore";
-import { updateIn } from "icepick";
+import { getIn, updateIn } from "icepick";
 
 import { createAction } from "redux-actions";
 
@@ -123,19 +123,40 @@ export const setTemplateTag = createThunkAction(
         delete updatedCard.description;
       }
 
+      // construct parameter mapping from tags
+      // FIXME: don't do it here!
+      const templateTags = getIn(updatedCard, [
+        "dataset_query",
+        "native",
+        "template-tags",
+      ]);
+      const parameterMappings = Object.values(templateTags).map(tag => {
+        const { id, name, type, required } = tag;
+        const mapping = { id, name, type, required };
+        mapping["display-name"] = tag["display-name"];
+        mapping.default = tag.default;
+        return mapping;
+      });
+
       // we need to preserve the order of the keys to avoid UI jumps
-      return updateIn(
+      const updateTags = tags => {
+        const { name } = templateTag;
+        const newTag =
+          tags[name] && tags[name].type !== templateTag.type
+            ? // when we switch type, null out any default
+              { ...templateTag, default: null }
+            : templateTag;
+        return { ...tags, [name]: newTag };
+      };
+      const updatedTagsCard = updateIn(
         updatedCard,
         ["dataset_query", "native", "template-tags"],
-        tags => {
-          const { name } = templateTag;
-          const newTag =
-            tags[name] && tags[name].type !== templateTag.type
-              ? // when we switch type, null out any default
-                { ...templateTag, default: null }
-              : templateTag;
-          return { ...tags, [name]: newTag };
-        },
+        updateTags,
+      );
+      return updateIn(
+        updatedTagsCard,
+        ["dataset_query", "native", "parameter-mappings"],
+        () => parameterMappings,
       );
     };
   },
