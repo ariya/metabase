@@ -124,19 +124,22 @@ export const setTemplateTag = createThunkAction(
       }
 
       // we need to preserve the order of the keys to avoid UI jumps
-      return updateIn(
+      const updateTags = tags => {
+        const { name } = templateTag;
+        const newTag =
+          tags[name] && tags[name].type !== templateTag.type
+            ? // when we switch type, null out any default
+              { ...templateTag, default: null }
+            : templateTag;
+        return { ...tags, [name]: newTag };
+      };
+      const newCard = updateIn(
         updatedCard,
         ["dataset_query", "native", "template-tags"],
-        tags => {
-          const { name } = templateTag;
-          const newTag =
-            tags[name] && tags[name].type !== templateTag.type
-              ? // when we switch type, null out any default
-                { ...templateTag, default: null }
-              : templateTag;
-          return { ...tags, [name]: newTag };
-        },
+        updateTags,
       );
+
+      return newCard;
     };
   },
 );

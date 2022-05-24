@@ -48,6 +48,8 @@ class NativeQueryEditor extends Component {
   constructor(props) {
     super(props);
 
+    console.log("NativeQueryEditor", props);
+
     const { query, viewHeight } = props;
     this.state = {
       initialHeight: calcInitialEditorHeight({ query, viewHeight }),

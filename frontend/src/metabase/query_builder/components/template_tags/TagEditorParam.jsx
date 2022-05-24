@@ -21,6 +21,10 @@ import MetabaseSettings from "metabase/lib/settings";
 class TagEditorParam extends Component {
   UNSAFE_componentWillMount() {
     const { tag, fetchField } = this.props;
+    console.log("TagEditorParam.UNSAFE_componentWillMount", {
+      tag,
+      fetchField,
+    });
 
     if (tag.type === "dimension" && Array.isArray(tag.dimension)) {
       const fieldId = tag.dimension[1];
@@ -110,6 +114,12 @@ class TagEditorParam extends Component {
 
   render() {
     const { tag, database, databases, metadata, parameter } = this.props;
+    console.log("TagEditorParameter.render", {
+      tag,
+      parameter,
+      database,
+      metadata,
+    });
     let widgetOptions = [];
     let field = null;
     let table = null;
