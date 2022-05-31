@@ -11,39 +11,42 @@ import {
   hasParameterValue,
 } from "metabase/parameters/utils/parameter-values";
 
-// NOTE: this should mirror `template-tag-parameters` in src/metabase/api/embed.clj
-export function getTemplateTagParameters(tags) {
-  function getTemplateTagType(tag) {
-    const { type } = tag;
-    if (type === "date") {
-      return "date/single";
-    } else if (type === "string") {
-      return "string/=";
-    } else if (type === "number") {
-      return "number/=";
-    } else {
-      return "category";
-    }
+function getTemplateTagType(tag) {
+  const { type } = tag;
+  if (type === "date") {
+    return "date/single";
+  } else if (type === "string") {
+    return "string/=";
+  } else if (type === "number") {
+    return "number/=";
+  } else {
+    return "category";
   }
+}
 
+// NOTE: this should mirror `template-tag-parameters` in src/metabase/api/embed.clj
+
+export function getTemplateTagParameter(tag) {
+  return {
+    id: tag.id,
+    type: tag["widget-type"] || getTemplateTagType(tag),
+    target:
+      tag.type === "dimension"
+        ? ["dimension", ["template-tag", tag.name]]
+        : ["variable", ["template-tag", tag.name]],
+    name: tag["display-name"],
+    slug: tag.name,
+    default: tag.default,
+  };
+}
+
+export function getTemplateTagParameters(tags) {
   return tags
     .filter(
       tag =>
         tag.type != null && (tag["widget-type"] || tag.type !== "dimension"),
     )
-    .map(tag => {
-      return {
-        id: tag.id,
-        type: tag["widget-type"] || getTemplateTagType(tag),
-        target:
-          tag.type === "dimension"
-            ? ["dimension", ["template-tag", tag.name]]
-            : ["variable", ["template-tag", tag.name]],
-        name: tag["display-name"],
-        slug: tag.name,
-        default: tag.default,
-      };
-    });
+    .map(getTemplateTagParameter);
 }
 
 export function getTemplateTagsForParameters(card) {
