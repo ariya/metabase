@@ -242,6 +242,9 @@ function QueryBuilder(props) {
     clearBreadcrumbs,
   } = props;
 
+  const { parameters } = props;
+  console.log('QueryBuilder render', { card });
+
   const forceUpdate = useForceUpdate();
   const forceUpdateDebounced = useMemo(() => _.debounce(forceUpdate, 400), [
     forceUpdate,
@@ -306,6 +309,7 @@ function QueryBuilder(props) {
   const handleSave = useCallback(
     async (card, { rerunQuery = false } = {}) => {
       const questionWithUpdatedCard = question.setCard(card);
+      console.log("QueryBuilder.handleSave", { card });
       await apiUpdateQuestion(questionWithUpdatedCard, { rerunQuery });
       if (!rerunQuery) {
         await updateUrl(questionWithUpdatedCard.card(), { dirty: false });

@@ -106,6 +106,11 @@ export class Api extends EventEmitter {
 
         Object.assign(headers, options.headers);
 
+        if (method === "POST") {
+          console.log('Request POST', url, { data })
+        }
+
+
         if (options.retry) {
           return this._makeRequestWithRetries(
             method,

@@ -63,6 +63,8 @@ export default class ActionButton extends Component {
       result: null,
     });
 
+    console.log('ActionButton.onClick', { event }, this.props.actionFn);
+
     // run the function we want bound to this button
     this.actionPromise = cancelable(this.props.actionFn());
     this.actionPromise.then(

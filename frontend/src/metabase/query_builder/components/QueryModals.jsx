@@ -55,6 +55,10 @@ export default class QueryModals extends React.Component {
       onOpenModal,
     } = this.props;
 
+    const { card } = this.props;
+
+    console.log("QueryModals.render", card);
+
     return modal === MODAL_TYPES.SAVE ? (
       <Modal form onClose={onCloseModal}>
         <SaveQuestionModal
@@ -69,6 +73,11 @@ export default class QueryModals extends React.Component {
           }}
           onCreate={async card => {
             await this.props.onCreate(card);
+            console.log('QueryModals.Modal.SaveQuestionModal.onCreate', {
+              'props.card': this.props.card,
+              'props.originalCard': this.props.originalCard,
+              card
+            });
             onOpenModal(MODAL_TYPES.SAVED);
           }}
           onClose={onCloseModal}

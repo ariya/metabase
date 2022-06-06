@@ -118,6 +118,8 @@ export const setTemplateTag = createThunkAction(
 
       const updatedCard = Utils.copy(card);
 
+      console.log('SET_TEMPLATE_TAG', card);
+
       // when the query changes on saved card we change this into a new query w/ a known starting point
       if (
         !uiControls.isEditing &&
@@ -150,6 +152,7 @@ export const setTemplateTag = createThunkAction(
           // reconstruct from the existing template tags
           const tags = getTemplateTagsForParameters(updatedTagsCard);
           const newParameters = getTemplateTagParameters(tags);
+          console.log('SET_TEMPLATE_TAG construct', { tags, newParameters });
           return assoc(updatedTagsCard, "parameters", newParameters);
         } else {
           // update an existing parameter
@@ -159,6 +162,7 @@ export const setTemplateTag = createThunkAction(
           } else {
             parameters[index] = getTemplateTagParameter(templateTag);
           }
+          console.log('SET_TEMPLATE_TAG modify', {index}, parameters);
         }
       }
 

@@ -67,6 +67,7 @@ export default class SaveQuestionModal extends Component {
     };
 
     if (details.saveType === "create") {
+      console.log('SaveQuestionModal.handleSubmit', card);
       await onCreate(card);
     } else if (details.saveType === "overwrite") {
       card.id = this.props.originalCard.id;
@@ -99,6 +100,8 @@ export default class SaveQuestionModal extends Component {
           ? "overwrite"
           : "create",
     };
+
+    console.log('SaveQuestionModal.render', { card });
 
     const title = this.props.multiStep
       ? t`First, save your question`
