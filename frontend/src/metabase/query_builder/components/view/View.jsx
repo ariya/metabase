@@ -453,7 +453,7 @@ class View extends React.Component {
       isHeaderVisible,
     } = this.props;
 
-    console.log('View (querybuilder)', { card });
+    // console.log('View (querybuilder)', { card });
 
     // if we don't have a card at all or no databases then we are initializing, so keep it simple
     if (!card || !databases) {

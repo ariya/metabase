@@ -41,6 +41,7 @@ export default class TagEditorSidebar extends React.Component {
 
   render() {
     const {
+      card,
       databases,
       databaseFields,
       sampleDatabaseId,
@@ -55,6 +56,13 @@ export default class TagEditorSidebar extends React.Component {
     const database = query.database();
     const parameters = query.question().parameters();
     const parametersById = _.indexBy(parameters, "id");
+
+    if (!card.parameters || _.isEmpty(card.parameters)) {
+      // Reconstruct from template tags if necessary
+      card.parameters = parameters;
+    }
+
+    console.log("TagEditorSidebar", { parameters, card });
 
     let section;
     if (tags.length === 0) {

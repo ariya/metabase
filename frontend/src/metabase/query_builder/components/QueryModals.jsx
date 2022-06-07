@@ -57,7 +57,7 @@ export default class QueryModals extends React.Component {
 
     const { card } = this.props;
 
-    console.log("QueryModals.render", card);
+    // console.log("QueryModals.render", card);
 
     return modal === MODAL_TYPES.SAVE ? (
       <Modal form onClose={onCloseModal}>

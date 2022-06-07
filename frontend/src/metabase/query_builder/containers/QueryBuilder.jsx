@@ -243,7 +243,7 @@ function QueryBuilder(props) {
   } = props;
 
   const { parameters } = props;
-  console.log('QueryBuilder render', { card });
+  // console.log('QueryBuilder render', { card });
 
   const forceUpdate = useForceUpdate();
   const forceUpdateDebounced = useMemo(() => _.debounce(forceUpdate, 400), [

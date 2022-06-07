@@ -49,7 +49,7 @@ module.exports = (on, config) => {
 
   on("before:browser:launch", (browser = {}, launchOptions) => {
     //  Open dev tools in Chrome by default
-    if (browser.name === "chrome" || browser.name === "chromium") {
+    if (browser.name === "electron" || browser.name === "chromium") {
       launchOptions.args.push("--auto-open-devtools-for-tabs");
     }
 
