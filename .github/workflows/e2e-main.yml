@@ -144,10 +144,7 @@ jobs:
       if: github.ref == 'refs/heads/master' && env.RECORDING_ENABLED != null
       run: |
         yarn run test-cypress-run \
-          --folder ${{ matrix.folder }} \
-          --record --key ${{ secrets.CURRENTS_KEY }} \
-          --group ${{ matrix.folder }}-${{ matrix.edition }} \
-          --ci-build-id "${{ github.run_id }}-${{ github.run_attempt }}"
+          --folder ${{ matrix.folder }}
       env:
         TERM: xterm
 
