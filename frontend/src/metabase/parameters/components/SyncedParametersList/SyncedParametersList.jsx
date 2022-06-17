@@ -50,6 +50,8 @@ export function SyncedParametersList({
     [parameters, dashboard],
   );
 
+  console.log('SyncedParameterList', { parameters });
+
   return (
     <ParametersList
       className={className}
