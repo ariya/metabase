@@ -154,8 +154,16 @@ jobs:
         TERM: xterm
 
     # These are EE-specific and version-agnostic tests
-    - name: Run Cypress E2E tests against EE uberjar
-      if: matrix.edition == 'ee'
+    - name: Run and record Cypress tests on ${{ matrix.folder }} - master branch
+      if: github.ref == 'refs/heads/master' && env.RECORDING_ENABLED != null && matrix.edition == 'ee'
+      run: |
+        yarn run test-cypress-run \
+          --folder ${{ matrix.folder }}
+      env:
+        TERM: xterm
+
+    - name: Run Cypress tests on ${{ matrix.folder }} - branches other than master
+      if: github.ref != 'refs/heads/master' && matrix.edition == 'ee'
       run: |
         yarn run test-cypress-run \
           --folder ${{ matrix.folder }}
