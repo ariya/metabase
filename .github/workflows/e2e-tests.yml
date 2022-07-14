@@ -2,7 +2,7 @@ name: E2E Tests for PR
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
     paths-ignore:
       - "docs/**"
       - "**.md"
