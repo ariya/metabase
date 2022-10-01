@@ -1,28 +1,7 @@
 import { t } from "ttag";
 
-import {
-  MBQL_CLAUSES,
-  getMBQLName,
-  parseDimension,
-  parseMetric,
-  parseSegment,
-} from "metabase/lib/expressions";
-import {
-  LOGICAL_OPS,
-  COMPARISON_OPS,
-  resolve,
-} from "metabase/lib/expressions/resolver";
-import {
-  parse,
-  lexify,
-  compile,
-  ResolverError,
-} from "metabase/lib/expressions/pratt";
-import {
-  useShorthands,
-  adjustCase,
-  adjustOptions,
-} from "metabase/lib/expressions/recursive-parser";
+import { getMBQLName, MBQL_CLAUSES } from "metabase/lib/expressions";
+import { processSource } from "metabase/lib/expressions/process";
 import { tokenize, TOKEN, OPERATOR } from "metabase/lib/expressions/tokenizer";
 
 // e.g. "COUNTIF(([Total]-[Tax] <5" returns 2 (missing parentheses)
@@ -76,78 +55,10 @@ export function diagnose(source, startRule, query, name = null) {
     return { message };
   }
 
-  try {
-    return prattCompiler(source, startRule, query, name);
-  } catch (err) {
-    return err;
+  const { compileError } = processSource({ source, query, startRule });
+  if (compileError) {
+    return Array.isArray(compileError) && compileError.length > 0
+      ? compileError[0]
+      : compileError;
   }
-}
-
-function prattCompiler(source, startRule, query, name) {
-  const tokens = lexify(source);
-  const options = { source, startRule, query, name };
-
-  // PARSE
-  const { root, errors } = parse(tokens, {
-    throwOnError: false,
-    ...options,
-  });
-  if (errors.length > 0) {
-    return errors[0];
-  }
-
-  function resolveMBQLField(kind, name, node) {
-    if (!query) {
-      return [kind, name];
-    }
-    if (kind === "metric") {
-      const metric = parseMetric(name, options);
-      if (!metric) {
-        throw new ResolverError(t`Unknown Metric: ${name}`, node);
-      }
-      return ["metric", metric.id];
-    } else if (kind === "segment") {
-      const segment = parseSegment(name, options);
-      if (!segment) {
-        throw new ResolverError(t`Unknown Segment: ${name}`, node);
-      }
-      return Array.isArray(segment.id) ? segment.id : ["segment", segment.id];
-    } else {
-      const reference = options.name; // avoid circular reference
-
-      // fallback
-      const dimension = parseDimension(name, { reference, ...options });
-      if (!dimension) {
-        throw new ResolverError(t`Unknown Field: ${name}`, node);
-      }
-      return dimension.mbql();
-    }
-  }
-
-  // COMPILE
-  try {
-    const expression = compile(root, {
-      passes: [
-        adjustOptions,
-        useShorthands,
-        adjustCase,
-        expr => resolve(expr, startRule, resolveMBQLField),
-      ],
-      getMBQLName,
-    });
-    const isBoolean =
-      COMPARISON_OPS.includes(expression[0]) ||
-      LOGICAL_OPS.includes(expression[0]);
-    if (startRule === "expression" && isBoolean) {
-      throw new ResolverError(
-        t`Custom columns do not support boolean expressions`,
-        expression.node,
-      );
-    }
-  } catch (err) {
-    console.warn("compile error", err);
-    return err;
-  }
-
-  return null;
 }
