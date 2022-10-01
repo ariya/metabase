@@ -141,9 +141,6 @@ jobs:
       run: |
         yarn run test-cypress-run \
           --folder ${{ matrix.folder }} \
-          --record --key ${{ secrets.CURRENTS_KEY }} \
-          --group ${{ matrix.folder }}-${{ matrix.edition }} \
-          --ci-build-id "${{ github.run_id }}-${{ github.run_attempt }}"
       env:
         TERM: xterm
 
