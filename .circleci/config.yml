@@ -27,39 +27,6 @@ executors:
     docker:
       - image: metabase/ci:java-17-clj-1.11.0.1100.04-2022-build
 
-  postgres-9-6:
-    working_directory: /home/circleci/metabase/metabase/
-    docker:
-      - image: metabase/ci:java-11-clj-1.11.0.1100.04-2022-build
-        environment:
-          MB_DB_TYPE: postgres
-          MB_DB_PORT: 5432
-          MB_DB_HOST: localhost
-          MB_DB_DBNAME: circle_test
-          MB_DB_USER: circle_test
-          MB_POSTGRESQL_TEST_USER: circle_test
-      - image: circleci/postgres:9.6-alpine
-        environment:
-          POSTGRES_USER: circle_test
-          POSTGRES_DB: circle_test
-
-  postgres-latest:
-    working_directory: /home/circleci/metabase/metabase/
-    docker:
-      - image: metabase/ci:java-11-clj-1.11.0.1100.04-2022-build
-        environment:
-          MB_DB_TYPE: postgres
-          MB_DB_PORT: 5432
-          MB_DB_HOST: localhost
-          MB_DB_DBNAME: metabase_test
-          MB_DB_USER: metabase_test
-          MB_POSTGRESQL_TEST_USER: metabase_test
-      - image: circleci/postgres:latest
-        environment:
-          POSTGRES_USER: metabase_test
-          POSTGRES_DB: metabase_test
-          POSTGRES_HOST_AUTH_METHOD: trust
-
   mysql-5-7:
     working_directory: /home/circleci/metabase/metabase/
     docker:
@@ -808,26 +775,6 @@ workflows:
             MB_ORACLE_SSL_TEST_SSL_TRUSTSTORE_PATH=/home/circleci/metabase/metabase/resources/certificates/rds_root_ca_truststore.jks
             MB_ORACLE_SSL_TEST_SSL_TRUSTSTORE_OPTIONS=local
             MB_ORACLE_SSL_TEST_SSL_TRUSTSTORE_PASSWORD_VALUE=metabase
-
-      - test-driver:
-          name: be-tests-postgres-ee
-          description: "(9.6)"
-          requires:
-            - be-tests-java-11-ee
-          e: postgres-9-6
-          driver: postgres
-
-      - test-driver:
-          name: be-tests-postgres-latest-ee
-          description: "(Latest)"
-          requires:
-            - be-tests-java-11-ee
-          e: postgres-latest
-          driver: postgres
-          extra-env: >-
-            MB_POSTGRES_SSL_TEST_SSL=true
-            MB_POSTGRES_SSL_TEST_SSL_MODE=verify-full
-            MB_POSTGRES_SSL_TEST_SSL_ROOT_CERT_PATH=/home/circleci/metabase/metabase/test-resources/certificates/us-east-2-bundle.pem
 
       - test-driver:
           name: be-tests-presto-ee
