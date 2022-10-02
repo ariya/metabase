@@ -1,0 +1,44 @@
+name: Driver Tests
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release-**'
+  pull_request:
+
+jobs:
+
+  be-tests-postgres-ee:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    env:
+      DRIVERS: postgres
+      MB_DB_TYPE: postgres
+      MB_DB_PORT: 5432
+      MB_DB_HOST: localhost
+      MB_DB_DBNAME: circle_test
+      MB_DB_USER: circle_test
+      MB_POSTGRESQL_TEST_USER: circle_test
+    services:
+      postgres:
+        image: circleci/postgres:9.6-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: circle_test
+          POSTGRES_DB: circle_test
+    steps:
+    - uses: actions/checkout@v3
+    - name: Prepare front-end environment
+      uses: ./.github/actions/prepare-frontend
+    - name: Prepare back-end environment
+      uses: ./.github/actions/prepare-backend
+
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
+
+    - name: Driver tests for Postgres 9.6
+      run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
+
