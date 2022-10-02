@@ -42,3 +42,9 @@ jobs:
     - name: Driver tests for Postgres 9.6
       run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
 
+    - name: Publish Test Report (JUnit)
+      uses: mikepenz/action-junit-report@v2
+      if: always()
+      with:
+        report_paths: 'target/junit/**/*_test.xml'
+        check_name: JUnit Test Report be-tests-postgres-ee
