@@ -39,6 +39,9 @@ jobs:
       uses: ./.github/actions/prepare-frontend
     - name: Prepare back-end environment
       uses: ./.github/actions/prepare-backend
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
 
     - name: Test Postgres driver (9.6)
       run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
@@ -79,6 +82,9 @@ jobs:
       uses: ./.github/actions/prepare-frontend
     - name: Prepare back-end environment
       uses: ./.github/actions/prepare-backend
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
 
     - name: Test Postgres driver (Latest)
       run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
