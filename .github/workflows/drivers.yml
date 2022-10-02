@@ -95,3 +95,39 @@ jobs:
       with:
         report_paths: 'target/junit/**/*_test.xml'
         check_name: JUnit Test Report be-tests-postgres-ee
+
+  be-tests-sqlserver-ee:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    env:
+      DRIVERS: sqlserver
+      MB_DB_TYPE: sqlserver
+      MB_SQLSERVER_TEST_HOST: localhost
+      MB_SQLSERVER_TEST_PASSWORD: 'P@ssw0rd'
+      MB_SQLSERVER_TEST_USER: SA
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: 'P@ssw0rd'
+          MSSQL_MEMORY_LIMIT_MB: 1024
+    steps:
+    - uses: actions/checkout@v3
+    - name: Prepare front-end environment
+      uses: ./.github/actions/prepare-frontend
+    - name: Prepare back-end environment
+      uses: ./.github/actions/prepare-backend
+    - run: yarn install --frozen-lockfile --prefer-offline
+    - name: Build static viz frontend
+      run: yarn build-static-viz
+
+    - name: Test MS SQL Server driver
+      run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
+
+    - name: Publish Test Report (JUnit)
+      uses: mikepenz/action-junit-report@v2
+      if: always()
+      with:
+        report_paths: 'target/junit/**/*_test.xml'
+        check_name: JUnit Test Report be-tests-postgres-ee
