@@ -30,17 +30,8 @@ jobs:
           MSSQL_MEMORY_LIMIT_MB: 1024
     steps:
     - uses: actions/checkout@v3
-    - name: Prepare front-end environment
-      uses: ./.github/actions/prepare-frontend
-    - name: Prepare back-end environment
-      uses: ./.github/actions/prepare-backend
-    - run: yarn install --frozen-lockfile --prefer-offline
-    - name: Build static viz frontend
-      run: yarn build-static-viz
-
-    - name: Test MS SQL Server driver
-      run: clojure -X:dev:ci:ee:ee-dev:drivers:drivers-dev:test
-
+    - name: Test database driver
+      uses: ./.github/actions/test-driver
     - name: Publish Test Report (JUnit)
       uses: mikepenz/action-junit-report@v2
       if: always()
