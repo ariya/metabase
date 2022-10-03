@@ -13,6 +13,12 @@ on:
 
 jobs:
 
+  be-tests-mysql-5-7-ee:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          echo "Didn't run due to conditional filtering"
+
   be-tests-postgres-ee:
     runs-on: ubuntu-20.04
     steps:
@@ -20,6 +26,12 @@ jobs:
           echo "Didn't run due to conditional filtering"
 
   be-tests-postgres-latest-ee:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          echo "Didn't run due to conditional filtering"
+
+  be-tests-sqlite-ee:
     runs-on: ubuntu-20.04
     steps:
       - run: |
