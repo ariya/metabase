@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     env:
+      CI: 'true'
       DRIVERS: sqlite
     steps:
     - uses: actions/checkout@v3
@@ -30,6 +31,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     env:
+      CI: 'true'
       DRIVERS: sqlserver
       MB_SQLSERVER_TEST_HOST: localhost
       MB_SQLSERVER_TEST_PASSWORD: 'P@ssw0rd'
