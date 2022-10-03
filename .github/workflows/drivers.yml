@@ -16,7 +16,7 @@ jobs:
 
   be-tests-mysql-5-7-ee:
     runs-on: ubuntu-20.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: 'true'
       DRIVERS: mysql
@@ -40,7 +40,7 @@ jobs:
 
   be-tests-postgres-ee:
     runs-on: ubuntu-20.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: 'true'
       DRIVERS: postgres
@@ -67,7 +67,7 @@ jobs:
 
   be-tests-postgres-latest-ee:
     runs-on: ubuntu-20.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: 'true'
       DRIVERS: postgres
@@ -98,7 +98,7 @@ jobs:
 
   be-tests-sqlite-ee:
     runs-on: ubuntu-20.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: 'true'
       DRIVERS: sqlite
@@ -111,7 +111,7 @@ jobs:
 
   be-tests-sqlserver-ee:
     runs-on: ubuntu-20.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: 'true'
       DRIVERS: sqlserver
