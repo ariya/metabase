@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     env:
+      MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.ENTERPRISE_TOKEN }}
       DRIVERS: postgres
       MB_DB_TYPE: postgres
       MB_DB_PORT: 5432
@@ -44,6 +45,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     env:
+      MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.ENTERPRISE_TOKEN }}
       DRIVERS: postgres
       MB_DB_TYPE: postgres
       MB_DB_PORT: 5432
@@ -74,6 +76,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
     env:
+      MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.ENTERPRISE_TOKEN }}
       DRIVERS: sqlserver
       MB_SQLSERVER_TEST_HOST: localhost
       MB_SQLSERVER_TEST_PASSWORD: 'P@ssw0rd'
