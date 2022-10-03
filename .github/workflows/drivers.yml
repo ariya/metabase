@@ -14,6 +14,30 @@ on:
 
 jobs:
 
+  be-tests-mysql-5-7-ee:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      DRIVERS: mysql
+      MB_DB_TYPE: mysql
+      MB_DB_HOST: localhost
+      MB_DB_PORT: 3306
+      MB_DB_DBNAME: circle_test
+      MB_DB_USER: root
+      MB_MYSQL_TEST_USER: root
+    services:
+      mysql:
+        image: circleci/mysql:5.7.23
+        ports:
+          - "3306:3306"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test MySQL driver (5.7)
+      uses: ./.github/actions/test-driver
+      with:
+        junit-name: 'be-tests-mysql-5-7-ee'
+
   be-tests-postgres-ee:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
