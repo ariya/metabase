@@ -27,19 +27,6 @@ executors:
     docker:
       - image: metabase/ci:java-17-clj-1.11.0.1100.04-2022-build
 
-  mysql-5-7:
-    working_directory: /home/circleci/metabase/metabase/
-    docker:
-      - image: metabase/ci:java-11-clj-1.11.0.1100.04-2022-build
-        environment:
-          MB_DB_TYPE: mysql
-          MB_DB_HOST: localhost
-          MB_DB_PORT: 3306
-          MB_DB_DBNAME: circle_test
-          MB_DB_USER: root
-          MB_MYSQL_TEST_USER: root
-      - image: circleci/mysql:5.7.23
-
   mysql-latest:
     working_directory: /home/circleci/metabase/metabase/
     docker:
@@ -672,7 +659,7 @@ workflows:
       - test-driver:
           matrix:
             parameters:
-              driver: ["bigquery-cloud-sdk", "googleanalytics", "sqlite"]
+              driver: ["bigquery-cloud-sdk", "googleanalytics"]
           name: be-tests-<< matrix.driver >>-ee
           requires:
             - be-tests-java-11-ee
@@ -711,7 +698,7 @@ workflows:
       - test-driver:
           matrix:
             parameters:
-              version: ["mysql-5-7", "mariadb-10-2", "mariadb-latest"]
+              version: ["mariadb-10-2", "mariadb-latest"]
           name: be-tests-<< matrix.version >>-ee
           description: "(<< matrix.version >>)"
           requires:
