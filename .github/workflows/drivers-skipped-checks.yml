@@ -67,6 +67,18 @@ jobs:
       - run: |
           echo "Didn't run due to conditional filtering"
 
+  be-tests-presto-186-ee:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          echo "Didn't run due to conditional filtering"
+
+  be-tests-sparksql-ee:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          echo "Didn't run due to conditional filtering"
+
   be-tests-sqlite-ee:
     runs-on: ubuntu-20.04
     steps:

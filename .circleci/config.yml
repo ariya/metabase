@@ -88,13 +88,6 @@ executors:
     # (see above)
     resource_class: large
 
-  sparksql:
-    working_directory: /home/circleci/metabase/metabase/
-    docker:
-      - image: metabase/ci:java-11-clj-1.11.0.1100.04-2022-build
-      - image: metabase/spark:3.2.1
-    resource_class: large
-
   vertica:
     working_directory: /home/circleci/metabase/metabase/
     docker:
@@ -723,16 +716,6 @@ workflows:
             - be-tests-java-11-ee
           driver: snowflake
           timeout: 115m
-
-      - test-driver:
-          name: be-tests-sparksql-ee
-          requires:
-            - be-tests-java-11-ee
-          e: sparksql
-          before-steps:
-            - wait-for-port:
-                port: 10000
-          driver: sparksql
 
       - test-driver:
           name: be-tests-vertica-ee
