@@ -1,5 +1,5 @@
 (ns metabase.driver.postgres
-  "Database driver for PostgreSQL databases. Builds on top of the SQL JDBC driver, which implements most functionality
+  "Database driver for PostgreSQL databases test. Builds on top of the SQL JDBC driver, which implements most functionality
   for JDBC-based drivers."
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.set :as set]
