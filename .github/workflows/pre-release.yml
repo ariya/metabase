@@ -21,8 +21,8 @@ jobs:
     steps:
     - name: Check out the code
       uses: actions/checkout@v3
-    - name: Switch to commit ${{ github.event.inputs.commit }}
-      run: git checkout ${{ github.event.inputs.commit }}
+      with:
+        ref: ${{ github.event.inputs.commit }}
     - name: Prepare front-end environment
       uses: ./.github/actions/prepare-frontend
     - name: Prepare back-end environment
@@ -73,8 +73,8 @@ jobs:
     steps:
     - name: Check out the code
       uses: actions/checkout@v3
-    - name: Switch to commit ${{ github.event.inputs.commit }}
-      run: git checkout ${{ github.event.inputs.commit }}
+      with:
+        ref: ${{ github.event.inputs.commit }}
     - uses: actions/download-artifact@v3
       name: Retrieve uberjar artifact
       with:
