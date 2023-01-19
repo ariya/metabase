@@ -14,4 +14,4 @@ jobs:
           script: |
             const { execSync } = require("child_process");
             const allTags = execSync("git tag -l");
-            console.log(stdout);
+            console.log(allTags);
