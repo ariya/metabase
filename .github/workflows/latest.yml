@@ -1,6 +1,12 @@
 name: Debug latest
 
-on: [push]
+on:
+  push:
+    branches:
+    - '**'
+    tags:
+    - 'v*'
+
 
 jobs:
 
@@ -13,5 +19,7 @@ jobs:
         with:
           script: |
             const { execSync } = require("child_process");
-            const allTags = execSync("git tag -l");
-            console.log(allTags);
+            const stdout = execSync("git tag -l");
+            const tags = Buffer.from(stdout, "utf-8");
+            // console.log(allTags);
+            console.log(context.payload)
