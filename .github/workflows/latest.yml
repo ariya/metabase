@@ -1,0 +1,17 @@
+name: Debug latest
+
+on: [push]
+
+jobs:
+
+  debug-latest:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const { execSync } = require("child_process");
+            const allTags = execSync("git tag -l");
+            console.log(stdout);
