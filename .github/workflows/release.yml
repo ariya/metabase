@@ -83,6 +83,8 @@ jobs:
           - 5000:5000
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # IMPORTANT! to get all the tags
     - uses: actions/download-artifact@v3
       name: Retrieve previously downloaded Uberjar
       with:
@@ -185,6 +187,10 @@ jobs:
             return prefix === currentVersion.prefix;
           });
           console.log("Found total", relevantTags.length, "filtered tags");
+          if (relevantTags.length < 10) {
+            console.error("Something is NOT RIGHT! Please check all git tags!!!");
+            return "not-latest";
+          }
 
           console.log();
           console.log("Sorting tags to find the highest version numbers...");
