@@ -1,0 +1,69 @@
+shared_sources: &shared_sources
+  - "shared/src"
+
+shared_specs: &shared_specs
+  - "shared/test"
+
+frontend_sources: &frontend_sources
+  - *shared_sources
+  - "frontend/**"
+  - "enterprise/frontend/**"
+  - "frontend/!(test)/**"
+  - "yarn.lock"
+  - "**/tsconfig*.json"
+  - "package.json"
+  - "babel.config.json"
+  - "postcss.config.js"
+  - "webpack.config.js"
+  - "webpack.static-viz.config.js"
+
+frontend_specs: &frontend_specs
+  - *shared_specs
+  - "frontend/test/!(__support__|__runner__)/**"
+  - "frontend/**.unit.*"
+  - "jest.config.js"
+
+frontend_all: &frontend_all
+  - *frontend_sources
+  - *frontend_specs
+
+backend_presto_kerberos:
+  - '**/presto_jdbc/**'
+  - '**/presto_jdbc.clj'
+
+backend_sources: &backend_sources
+  - *shared_sources
+  - "enterprise/backend/src/**"
+  - "src/**"
+  - "*modules/**"
+
+backend_specs: &backend_specs
+  - *shared_specs
+  - "test/**"
+  - "enterprise/backend/test/**"
+
+backend_all: &backend_all
+  - *backend_sources
+  - *backend_specs
+  - *frontend_sources # keep it here until we detect static viz changes
+
+sources: &sources
+  - *frontend_sources
+  - *backend_sources
+
+e2e_specs: &e2e_specs
+  - "**.cy.*.js"
+  - "frontend/test/__support__/e2e/**"
+  - "frontend/test/__runner__/*cypress*"
+
+e2e_and_sources:
+  - *e2e_specs
+  - *sources
+
+snowplow:
+  - 'snowplow/**'
+  - '.github/workflows/**'
+
+documentation:
+  - "docs/**"
+  - "**.md"

@@ -3,21 +3,30 @@ name: E2E Tests for PR
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - "docs/**"
-      - "**.md"
-      - ".circleci/**"
-      - "**.unit.spec.*"
-      - "**_test.clj"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  files-changed:
+    name: Check which files changed
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
+    outputs:
+      e2e_and_sources: ${{ steps.changes.outputs.e2e_and_sources }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test which files changed
+        uses: dorny/paths-filter@v2.11.1
+        id: changes
+        with:
+          token: ${{ github.token }}
+          filters: .github/file-paths.yaml
 
   build:
-    if: github.event.pull_request.draft == false
+    needs: files-changed
+    if: github.event.pull_request.draft == false && needs.files-changed.outputs.e2e_and_sources == 'true'
     runs-on: ubuntu-20.04
     timeout-minutes: 25
     strategy:
