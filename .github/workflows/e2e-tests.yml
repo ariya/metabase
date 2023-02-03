@@ -53,9 +53,13 @@ jobs:
       uses: ./.github/actions/prepare-uberjar-artifact
 
   e2e-tests:
+    needs: [build, files-changed]
+    if: |
+      always() &&
+      needs.files-changed.outputs.e2e_and_sources == 'true' &&
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
     runs-on: ubuntu-20.04
     timeout-minutes: 45
-    needs: build
     name: e2e-tests-${{ matrix.folder }}${{ matrix.context }}-${{ matrix.edition }}
     env:
       MB_EDITION: ${{ matrix.edition }}
