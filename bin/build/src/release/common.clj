@@ -135,7 +135,7 @@
    (s3-artifact-url (version) filename))
 
   ([version filename]
-   (s3-artifact-url "downloads.metabase.com" version filename))
+   (s3-artifact-url "ariya-downloads.metabase.com" version filename))
 
   ([s3-bucket version filename]
    (format "s3://%s%s" s3-bucket (s3-artifact-path version filename))))
