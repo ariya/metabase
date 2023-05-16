@@ -33,7 +33,7 @@ jobs:
         script: |
           var canonical_version;
           const ver = process.env.INTENDED_VERSION;
-          console.log("Version", { ver, version });
+          console.log("Version", { ver, canonical_version });
           if (${{ matrix.edition }} === "ee") {
             canonical_version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
           } else {
@@ -41,7 +41,7 @@ jobs:
           }
           return canonical_version;
 
-    - run: echo "Canonical version is ${{ steps.latest_version_check.outputs.result }}""
+    - run: echo "Canonical version is ${{ steps.canonical_version.outputs.result }}""
 
   check-commit:
     needs: check-version
