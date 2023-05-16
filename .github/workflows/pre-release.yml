@@ -28,13 +28,14 @@ jobs:
       id: canonical_version
       env:
         INTENDED_VERSION: ${{ github.event.inputs.version }}
+        EDITION: ${{ matrix.edition }}
       with:
         result-encoding: string
         script: |
           var canonical_version;
           const ver = process.env.INTENDED_VERSION;
           console.log("Version", { ver, canonical_version });
-          if (${{ matrix.edition }} === "ee") {
+          if (process.env.EDITION === "ee") {
             canonical_version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
           } else {
             canonical_version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
