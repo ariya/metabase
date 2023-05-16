@@ -15,37 +15,8 @@ env:
   CUSTOM_REPO: ${{ secrets.CUSTOM_RELEASE_REPO }}
 
 jobs:
-  check-version:
-    runs-on: ubuntu-22.04
-    name: Canonicalize version for ${{ matrix.edition }}
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        edition: [oss, ee]
-    steps:
-    - name: Determine the canonical version
-      uses: actions/github-script@v6
-      id: canonical_version
-      env:
-        INTENDED_VERSION: ${{ github.event.inputs.version }}
-        EDITION: ${{ matrix.edition }}
-      with:
-        result-encoding: string
-        script: |
-          var canonical_version;
-          const ver = process.env.INTENDED_VERSION;
-          console.log("Version", { ver, canonical_version });
-          if (process.env.EDITION === "ee") {
-            canonical_version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
-          } else {
-            canonical_version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
-          }
-          return canonical_version;
-
-    - run: echo "Canonical version is ${{ steps.canonical_version.outputs.result }}""
 
   check-commit:
-    needs: check-version
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
@@ -115,10 +86,32 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ github.event.inputs.commit }}
-    # The next step is necessary because the build process inserts
-    # the git tag in the properties file (as the canonical version number)
-    - name: Pretend to be the intended version
-      run: git tag ${{ github.event.inputs.version }}
+
+    - name: Determine the canonical version
+      uses: actions/github-script@v6
+      id: canonical_version
+      env:
+        INTENDED_VERSION: ${{ github.event.inputs.version }}
+        EDITION: ${{ matrix.edition }}
+      with:
+        result-encoding: string
+        script: |
+          var canonical_version;
+          const ver = process.env.INTENDED_VERSION;
+          console.log("Version", { ver, canonical_version });
+          if (process.env.EDITION === "ee") {
+            canonical_version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
+          } else {
+            canonical_version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
+          }
+          return canonical_version;
+    - run: echo "Canonical version is ${{ steps.canonical_version.outputs.result }}"
+
+    # The next step is necessary because the build process uses the git tag
+    # as the official version in the properties file
+    - name: Pretend to be the specified version
+      run: git tag ${{ steps.canonical_version.outputs.result }}
+
     - name: Prepare front-end environment
       uses: ./.github/actions/prepare-frontend
     - name: Prepare back-end environment
