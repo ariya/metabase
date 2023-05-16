@@ -15,7 +15,33 @@ env:
   CUSTOM_REPO: ${{ secrets.CUSTOM_RELEASE_REPO }}
 
 jobs:
+  check-version:
+    runs-on: ubuntu-22.04
+    name: Canonicalize version for ${{ matrix.edition }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        edition: [oss, ee]
+    steps:
+    - name: Determine the canonical version
+      uses: actions/github-script@v6
+      id: canonical_version
+      with:
+        result-encoding: string
+        script: |
+          const ver = ${{ github.event.inputs.version }}
+          var version;
+          console.log("Version", { ver, version });
+          if (${{ matrix.edition }} === "ee") {
+            version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
+          } else {
+            version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
+          }
+          return version;
+    - run: echo "Canonical version is ${{ steps.latest_version_check.outputs.result }}""
+
   check-commit:
+    needs: check-version
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
