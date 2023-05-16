@@ -26,18 +26,21 @@ jobs:
     - name: Determine the canonical version
       uses: actions/github-script@v6
       id: canonical_version
+      env:
+        INTENDED_VERSION: ${{ github.event.inputs.version }}
       with:
         result-encoding: string
         script: |
-          const ver = ${{ github.event.inputs.version }}
-          var version;
+          var canonical_version;
+          const ver = process.env.INTENDED_VERSION;
           console.log("Version", { ver, version });
           if (${{ matrix.edition }} === "ee") {
-            version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
+            canonical_version = ver.replace(/^v0\./, "v1."); // always e.g. v1.47.2
           } else {
-            version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
+            canonical_version = ver.replace(/^v1\./, "v0."); // always e.g. v0.45.6
           }
-          return version;
+          return canonical_version;
+
     - run: echo "Canonical version is ${{ steps.latest_version_check.outputs.result }}""
 
   check-commit:
