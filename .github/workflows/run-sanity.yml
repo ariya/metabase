@@ -92,5 +92,4 @@ jobs:
         run: |
           yarn cypress run \
             --browser chrome \
-            --config-file e2e/test/scenarios/cross-version/source/shared/cross-version-source.config.js \
-            --spec e2e/test/scenarios/cross-version/source/**/*.cy.spec.js
+            --spec './e2e/test/scenarios/onboarding/**/*.cy.spec.js'
