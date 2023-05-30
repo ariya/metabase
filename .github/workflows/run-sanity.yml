@@ -61,46 +61,6 @@ jobs:
       MB_EDITION: ${{ matrix.edition }}
       DISPLAY: ""
       MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.ENTERPRISE_TOKEN }}
-      MB_SNOWPLOW_AVAILABLE: true
-      MB_SNOWPLOW_URL: "http://localhost:9090" # Snowplow micro
-      TZ: US/Pacific # to make node match the instance tz
-    services:
-      maildev:
-        image: maildev/maildev:2.0.5
-        ports:
-          - "1080:1080"
-          - "1025:1025"
-        credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      openldap:
-        image: osixia/openldap:1.5.0
-        ports:
-          - "389:389"
-        credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      postgres-sample:
-        image: metabase/qa-databases:postgres-sample-12
-        ports:
-          - "5404:5432"
-        credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      mongo-sample:
-        image: metabase/qa-databases:mongo-sample-4.4
-        ports:
-          - 27004:27017
-        credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      mysql-sample:
-        image: metabase/qa-databases:mysql-sample-8
-        ports:
-          - 3304:3306
-        credentials:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Prepare front-end environment
@@ -124,9 +84,13 @@ jobs:
           jar xf target/uberjar/metabase.jar version.properties
           mv version.properties resources/
 
-      - name: Run OSS-specific Cypress tests
+      - name: Launch uberjar (and keep it running)
+        run: java -jar ./target/uberjar/metabase.jar &
+      - name: Wait for Metabase to start
+        run: while ! curl -s 'http://localhost:3000/api/health' | grep '{"status":"ok"}'; do sleep 1; done
+      - name: Run Cypress tests
         run: |
-          yarn run test-cypress-run \
-          --spec './e2e/test/scenarios/**/*.cy.spec.js'
-        env:
-          TERM: xterm
+          yarn cypress run \
+            --browser chrome \
+            --config-file e2e/test/scenarios/cross-version/source/shared/cross-version-source.config.js \
+            --spec e2e/test/scenarios/cross-version/source/**/*.cy.spec.js
