@@ -87,9 +87,9 @@ jobs:
     steps:
     - name: Extract and clean branch name
       shell: bash
-      run: echo "{branch}={$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^-._a-zA-Z0-9]/-/g')}" >> $GITHUB_OUTPUT
+      run: echo "branch=$(echo $GITHUB_REF_NAME | sed 's/[^-._a-zA-Z0-9]/-/g')" >> $GITHUB_OUTPUT
       id: extract_branch
-    - name: Verify the intended image tag
+    - name: Verify the name of intended image tag
       run: echo "Container image will be pushed as ${{ steps.extract_branch.outputs.branch }}-${{ matrix.edition }}"
     - name: Check out the code (Dockerfile needed)
       uses: actions/checkout@v3
