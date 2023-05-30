@@ -1,0 +1,51 @@
+name: Run sanity
+
+on: 
+  push:
+    branches: [master]
+
+env:
+  MAX_HASH_LENGTH: 8
+  CUSTOM_REPO: ${{ secrets.CUSTOM_RELEASE_REPO }}
+
+jobs:
+  download-prebuilt:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        edition: [oss, ee]
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v3
+    - name: "TEST ONLY: Download prebuilt/official Uberjar"
+      run: curl -OL https://downloads.metabase.com/v0.46.4/metabase.jar
+    - run: mkdir -p ./target/uberjar && mv metabase.jar ./target/uberjar/
+    - name: Prepare uberjar artifact
+      uses: ./.github/actions/prepare-uberjar-artifact
+
+  check-uberjar-health:
+    runs-on: ubuntu-22.04
+    name: Is ${{ matrix.edition }} (java ${{ matrix.java-version }}) healthy?
+    needs: download-prebuilt
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        edition: [oss, ee]
+        java-version: [11, 17]
+    steps:
+    - name: Prepare JRE (Java Run-time Environment)
+      uses: actions/setup-java@v3
+      with:
+        java-package: jre
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+    - run: java -version
+    - uses: actions/download-artifact@v3
+      name: Retrieve uberjar artifact
+      with:
+        name: metabase-${{ matrix.edition }}-uberjar
+    - name: Launch uberjar (and keep it running)
+      run: java -jar ./target/uberjar/metabase.jar &
+    - name: Wait for Metabase to start
+      run: while ! curl -s 'http://localhost:3000/api/health' | grep '{"status":"ok"}'; do sleep 1; done
