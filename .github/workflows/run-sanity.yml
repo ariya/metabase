@@ -92,4 +92,5 @@ jobs:
         run: |
           yarn cypress run \
             --browser chrome \
+            --config-file e2e/cypress.config.js \
             --spec './e2e/test/scenarios/onboarding/**/*.cy.spec.js'
